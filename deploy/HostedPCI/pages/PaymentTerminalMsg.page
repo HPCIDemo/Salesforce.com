@@ -1,0 +1,93 @@
+<apex:page sidebar="false"  Controller="PaymentTerminalMsgController" action="{!saveData}">
+<head>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
+    <script src="//code.jquery.com/jquery-1.10.2.js"></script>      
+    <script>  
+        $(document).ready(function(){                           
+            $( "#button" ).click(function() {  
+                  $(this).text($(this).text()=="Show full message"?"Hide message":"Show full message");
+                  $('.toggler').toggle();              
+            });            
+       });     
+    </script>
+    <style type="text/css">
+       
+        .apexp{
+              padding: 10px;
+              margin : auto;
+              max-width: 823px;              
+        }        
+        body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock  { 
+            border: 6px solid #1F497D;;
+            background: #DDD ;
+            padding: 15px;        
+            margin-top: 10px;  
+            background: linear-gradient(#E5F2F6, #CDE8F0) fixed;         
+        }
+        #effect{
+            word-wrap: break-word;
+        }        
+        .toggler{
+          display:none;
+        }        
+         .back:hover {
+             border: 3px solid #8AC007;
+             color: rgba(20, 231, 216, 0.85);            
+         }      
+    </style>   
+   </head> 
+   <body > 
+   <apex:messages id="error" styleClass="errorMsg" layout="table" style="margin-top:1em;"/>  
+    <apex:pageBlock title="Transaction Summary" >      
+        <apex:panelGrid columns="2">
+            <!-- Gets responseStatus from the response map that the iframe sent back -->
+            <apex:outputLabel value="Status:"/>
+            <apex:outputText value="{!status}"/>
+            <!-- Gets description from the response map that the iframe sent back -->
+            <apex:outputLabel value="Description:"/>
+            <apex:outputText value="{!description}"/>
+            <!-- Gets processorRefId from the response map that the iframe sent back -->
+            <apex:outputLabel value="Processor Reference ID:"/>
+            <apex:outputText value="{!processorRefId}"/>
+            <!-- Gets merchantRefId from the response map that the iframe sent back -->
+            <apex:outputLabel value="Merchant ID:"/>
+            <apex:outputText value="{!merchantRefId}"/>
+            <!-- Gets cardType from the user input on previous page -->
+            <apex:outputLabel value="Card Type:"/>
+            <apex:outputText value="{!cardType}"/>
+            <!-- Gets cardNumber  -->
+            <apex:outputLabel value="Token Card Number:"/>
+            <apex:outputText value="{!ccNum}"/>
+            <!-- Gets cvvNumber  -->
+            <apex:outputLabel value="Token CVV Number:"/>
+            <apex:outputText value="{!cardCVV}"/>
+            <apex:outputLabel value="Payment Date:"/>
+            <!-- Gets today's date -->
+            <apex:outputText value="{!payDate}"/>
+            <!-- Gets amount from the user input on previous page -->
+            <apex:outputLabel value="Amount:"/>
+            <apex:outputText value="{!amount}"/>
+            <!-- Gets comment from the user input on previous page -->
+            <apex:outputLabel value="Comments:"/>
+            <apex:outputText value="{!comment}"/>
+        </apex:panelGrid>              
+       <button id="button" >Show full message</button>
+       <div class="toggler">
+          <div id="effect" class="ui-widget-content ui-corner-all">
+          <!-- Gets full plain message received from Hosted PCI  -->
+          <h3 class="ui-widget-header ui-corner-all"> Hosted PCI message</h3>
+              <p>
+                  {!hostedPciMsg}
+              </p>
+          </div>
+        </div>
+        <apex:form >
+        <div class="row" style="float:right;">            
+            <apex:commandButton action="{!back}" value="Back" styleClass="back"/>
+        </div>   
+        </apex:form>   
+    </apex:pageBlock> 
+   </body>     
+</apex:page>

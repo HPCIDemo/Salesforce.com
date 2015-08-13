@@ -1,0 +1,376 @@
+<apex:page doctype="html-5.0" applyhtmltag="false" showheader="false" controller="PaymentTerminalController" standardstylesheets="false" cache="false" >
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+    
+    <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-2.1.1.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery.ba-postmessage.2.0.0.min.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'hpci-cciframe-1.0.js')}"/>    
+    <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
+    <script type="text/javascript">
+        $(document).ready(function() {            
+            $("#paymentResetButton").click(function () {
+                document.getElementById("CCAcceptForm").reset();
+                document.getElementById("ccframe").src = document.getElementById("ccframe").src;                               
+            });
+            var siteId = document.getElementById("{!$Component.config.siteId}").value;
+        	var locationName = document.getElementById("{!$Component.config.locationName}").value;
+      		var fullParentQStr = document.getElementById("{!$Component.config.fullParentQStr}").value;
+        	var fullParentHost = document.getElementById("{!$Component.config.fullParentHost}").value;
+			
+            hpciCCFrameFullUrl = "https://cc.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&"
+        	+"locationName="+locationName 
+        	+"&sid=" + siteId 
+        	+"&fullParentHost=https://" + fullParentHost
+            +"&fullParentQStr=" + fullParentQStr;              
+            
+            document.getElementById("ccframe").src=hpciCCFrameFullUrl;
+        });
+        
+    </script>
+    <script>
+        var hpciCCFrameHost = "https://cc.hostedpci.com";
+        var hpciCCFrameFullUrl ;
+        var hpciCCFrameName = "ccframe"; // use the name of the frame containing the credit card
+    
+        var hpciSiteErrorHandler = function(errorCode, errorMsg) {
+            // Please the following alert to properly display the error message
+            //alert("Error while processing credit card code:" + errorCode + "; msg:"   + errorMsg);
+            document.getElementById('errorMessage').style.display = 'block';
+        }
+    
+        var hpciSiteSuccessHandlerV2 = function(mappedCCValue, mappedCVVValue, ccBINValue) {
+            // Please pass the values to the document input and then submit the form
+            
+            // No errors from iframe so hide the errorMessage div
+            document.getElementById('errorMessage').style.display = 'none';
+            // Name of the input (hidden) field required by ecommerce site
+            // Typically this is a hidden input field.
+            var ccNumInput = document.getElementById("ccNum");
+            ccNumInput.value = mappedCCValue;
+    
+            // name of the input (hidden) field required by ecommerce site
+            // Typically this is a hidden input field.
+            var ccCVVInput = document.getElementById("ccCVV");
+            ccCVVInput.value = mappedCVVValue;
+    
+            // name of the input (hidden) field required by ecommerce site
+            // Typically this is a hidden input field.
+            var ccBINInput = document.getElementById("ccBIN");
+            ccBINInput.value = ccBINValue;
+    
+            // name of the form submission for ecommerce site
+            var pendingForm = document.getElementById("CCAcceptForm");
+                        
+            pendingForm.submit();
+    
+        }
+    
+        var hpci3DSitePINSuccessHandler = function() {
+            // name of the form submission for ecommerce site
+            var pendingForm = document.getElementById("CCAcceptForm");
+            pendingForm.submit();
+        }
+    
+        var hpci3DSitePINErrorHandler = function() {
+            // Adapt the following message / action to match your required experience
+            alert("Could not verify PIN for the credit card");
+        }
+    
+        var hpciCCPreliminarySuccessHandler = function(hpciCCTypeValue, hpciCCBINValue, hpciCCValidValue, hpciCCLengthValue) {
+            // Adapt the following message / action to match your required experience
+            alert("Received preliminary credit card details");
+        }
+    
+        var hpciCVVPreliminarySuccessHandler = function(hpciCVVLengthValue) {
+            // Adapt the following message / action to match your required experience
+            alert("Received preliminary CVV details");
+        }
+    </script>    
+    <style type="text/css">
+    body {        
+         background:linear-gradient(white, #2A94D6);
+    }
+    h1 {
+        margin: 30px 0;
+        padding: 0 200px 15px 0;
+        border-bottom: 1px solid #E5E5E5;
+    }
+    
+    .container {
+        margin-top: 10px;        
+    }
+    
+    fieldset {
+        font-family: sans-serif;
+        border: 5px solid #1F497D;;
+        background: #CDE8F0;
+        border-radius: 5px;
+        padding: 15px;        
+        margin-top: 10px;
+    }
+    
+    fieldset legend {
+        background: #1F497D;
+        color: #fff;       
+        padding: 5px 10px;
+        font-size: 32px;
+        border-radius: 5px;
+        box-shadow: 0 0 0 5px #ddd;
+        margin-left: 10px;
+        margin-right: 60px;
+        width: auto;        
+    }
+    .row {
+        margin-top: 5px;
+        margin-bottom: 5px;
+    }
+    .col-centered {
+        float: none;
+        margin: 0 auto;
+    }
+    </style>
+</head>
+
+<body>
+<!-- container class sets the page to use 100% width -->
+<div class="container">
+    <!-- row class sets the margins on the sides -->
+    <div class="row">
+        <!-- col-md-7 col-centered class uses the bootstrap grid system to use 7/12 of the screen and place it in the middle -->
+        <div class="col-md-7 col-centered">
+            <!-- IMPORTANT: id CCAcceptForm needs to match the ID's in the HostedPCI script code -->
+            <!-- So if you change this ID, make sure to change it in all other places -->
+            <!-- Action points to the servlet -->
+            <form id="CCAcceptForm"  action ="apex/HostedPCIMsg" method="post">
+                <fieldset>
+                    <!-- Form Name -->
+                    <legend>Web Checkout</legend>
+                    <fieldset >
+                        <legend>Credit Card Information</legend>
+                        <!-- Error message for invalid credit card -->
+                        <div id="errorMessage" style="display:none;color:red"><label>Invalid card number, try again</label><br/></div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <!-- Select credit card -->
+                                <label for="cardType">Card Type</label>
+                            </div>
+                        </div><!-- row -->
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <!-- id is used in HostedPCIMsg page -->
+                                <select id="cardType" name="cardType" class="selectpicker">
+                                    <option value="visa">Visa</option>
+                                    <option value="mastercard">MasterCard</option>
+                                    <option value="amex">American Express</option>
+                                </select>
+                            </div>
+                        </div><!-- row -->
+                        <!-- iframe -->
+                        <div class="row">
+                            <iframe id="ccframe" name="ccframe" onload="receiveHPCIMsg()" src="" style="border:none" height="61"> 
+                            If you can see this, your browser doesn't understand IFRAME. 
+                            </iframe>
+                        </div><!-- row -->
+                        <!-- Input row (exp, month, cvv) -->
+                        <div class="row">
+                            <div class="col-xs-5 col-sm-4 col-md-4">
+                                    <label>Expiry MM/YY</label>
+                                    <!-- id is used in HostedPCIMsg page -->
+                            </div>
+                        </div><!-- row -->
+                        <!-- Input row (exp, month, cvv) -->
+                        <div class="row">
+                            <div class="col-xs-5 col-sm-3 col-md-3">
+                                <select id="expiryMonth" name="expiryMonth" class="selectpicker">
+                                    <option value="01">01 - January</option>
+                                    <option value="02">02 - February</option>
+                                    <option value="03">03 - March</option>
+                                    <option value="04">04 - April</option>
+                                    <option value="05">05 - May</option>
+                                    <option value="06">06 - June</option>
+                                    <option value="07">07 - July</option>
+                                    <option value="08">08 - August</option>
+                                    <option value="09">09 - September</option>
+                                    <option value="10">10 - October</option>
+                                    <option value="11">11 - November</option>
+                                    <option value="12">12 - December</option>
+                                </select>
+                            </div>
+                            <div class="col-xs-2 col-sm-2 col-md-2">        
+                                <!-- id is used in HostedPCIMsg page -->
+                                <select id="expiryYear" name="expiryYear" class="selectpicker">
+                                    <option value="15">2015</option>
+                                    <option value="16">2016</option>
+                                    <option value="17">2017</option>
+                                    <option value="18">2018</option>
+                                    <option value="19">2019</option>
+                                    <option value="20">2020</option>
+                                    <option value="21">2021</option>
+                                    <option value="22">2022</option>
+                                    <option value="23">2023</option>
+                                    <option value="24">2024</option>
+                                    <option value="25">2025</option>
+                                    <option value="26">2026</option>
+                                </select>
+                            </div>
+                        </div><!-- row -->
+                    </fieldset>
+                    <br />
+                    <fieldset>
+                        <legend>Personal Information</legend>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>First Name:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <input id="firstName" type="text" name="firstName"></input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>Last Name:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <input id="lastName" type="text" name="lastName"></input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>Address Line 1:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <input id="address1" type="text" name="address1"></input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>Address Line 2:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <input id="address2" type="text" name="address2"></input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>City:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <input id="city" type="text" name="city"></input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>State / Province:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <input id="state" type="text" name="state"></input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>Zip / Postal Code:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <input id="zip" type="text" name="zip"></input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>Country:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <select id="country" name="country">
+                                    <option value="CAN">Canada</option>
+                                    <option value="US">United States</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>Payment Comments:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <input id="comment" type="text" name="comment"></input>
+                            </div>
+                        </div>                        
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>Currency:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <select id="currency" name="currency">
+                                    <option value="CAD">Canadian Dollar</option>
+                                    <option value="USD">US Dollar</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>Payment Amount:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <input id="amount" type="text" name="amount"></input>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>Payment Profile:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <select id="paymentProfile" name="paymentProfile">
+                                    <option value="DEF">DEF - Currency: USD</option>
+                                    <option value="DEF_MONERIS">DEF_MONERIS - Currency: CAD</option>
+                                    <option value="DEF_MONERIS">DEF_MONERIS - Currency: USD</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-3 col-md-4">
+                                <!-- Submit button -->
+                                <button type="submit" value="Submit" class="btn btn-primary"
+                                    onClick='return sendHPCIMsg();'>Process Payment</button>
+                            </div>  
+                            <div class="col-xs-6 col-sm-3 col-md-4">
+                                <!-- Reset button -->
+                                <button id="paymentResetButton" type="button" value="Reset Payment" class="btn btn-primary">Reset Payment</button><br />
+                            </div>
+                        </div>
+                        <br />  
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <label>API Transaction service:</label>
+                            </div>
+                            <div class="col-xs-4 col-sm-3 col-md-5">
+                                <select id="apiTransactionService" name="apiTransactionService">
+                                    <option value="auth">Auth</option>
+                                    <option value="capture">Capture</option>
+                                    <option value="credit">Credit</option>                                    
+                                    <option value="sale">Sale</option>
+                                    <option value="void">Void</option>
+                                </select>
+                            </div>
+                        </div>                      
+                        <div class="row">
+                            <!-- Hidden rows that are required by the  -->
+                            <div class="col-xs-6 col-sm-3 col-md-4">
+                                <input type="hidden" id="ccNum" name="ccNum" value="" class="form-control"></input>
+                                <input type="hidden" id="ccCVV" name="ccCVV" value="" class="form-control"></input> 
+                                <input type="hidden" id="ccBIN" name="ccBIN" value="" class="form-control"></input>
+                            </div>
+                        </div>
+                    </fieldset> 
+                </fieldset><!-- Outer fieldset -->
+            </form>
+        </div><!-- col-md-7 col-centered -->
+    </div><!-- row -->
+</div><!-- container -->
+ <apex:form id="config">
+  	<apex:inputHidden id="siteId" value="{!siteId}"/>     
+  	<apex:inputHidden id="locationName" value="{!locationName}"/>
+    <apex:inputHidden id="fullParentQStr" value="{!fullParentQStr}"/>
+    <apex:inputHidden id="fullParentHost" value="{!fullParentHost}"/>    
+  </apex:form>
+</body>
+</apex:page>

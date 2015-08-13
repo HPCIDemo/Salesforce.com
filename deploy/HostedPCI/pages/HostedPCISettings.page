@@ -1,0 +1,75 @@
+<apex:page controller="HostedPCISettingsController" sidebar="false">
+  <style type="text/css">
+    .config{
+      font-style:italic;
+      font-size:18px;
+    }
+    .outKey{    	
+      	font-size:18px;
+    }
+    input:hover{
+    	border-color : #E92121;  
+    }
+    .popupBackground{
+      	background-color:black;
+    	opacity: 0.60;
+        filter: alpha(opacity = 20);
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+      	z-index: 9998;
+    }
+    .custPopup{
+    	background-color: white;
+        border-width: 2px;
+        border-style: solid;
+        z-index: 9999;
+        left: 55%;
+        padding:10px;
+        position: absolute;        
+        width: 580px;
+        margin-left: -380px;
+        top:100px;      	      	
+    }          		      	
+  </style>
+    <apex:messages id="error" styleClass="errorMsg" layout="table" style="margin-top:1em;"/> 
+    <apex:pageBlock title="HostedPCI Connection Settings" >
+      <apex:form >            
+        <apex:PanelGrid columns="3"  id="config">                    
+          <apex:outputLabel styleClass="outKey" value="User Name : "/>          
+          <apex:outputText styleClass="config" value="{!userName}"/>
+          <apex:commandButton id="userName" value="Edit" onclick="Edit('userName')"  rerender="modal"/> 		  	
+          <apex:outputLabel styleClass="outKey" value="User passkey: "/>          
+          <apex:outputText styleClass="outKey" value="{!userPassKey}"/>
+          <apex:commandButton id="userPasskey" value="Edit" onclick="Edit('userPassKey')"  rerender="modal"/>           
+          <apex:outputLabel styleClass="outKey" value="End Point Base Url: "/>          
+          <apex:outputText styleClass="config" value="{!endPointBaseUrl}"/>
+          <apex:commandButton id="endPointBaseUrl" value="Edit" onclick="Edit('endPointBaseUrl')"  rerender="modal"/>                     
+          <apex:outputLabel styleClass="outKey" value="SiteId: "/>          
+          <apex:outputText styleClass="config" value="{!siteId}"/>
+          <apex:commandButton id="siteId" value="Edit" onclick="Edit('siteId')"  rerender="modal"/>                              
+          <apex:outputLabel styleClass="outKey" value="Location name: "/>          
+          <apex:outputText styleClass="config" value="{!locationName}"/>
+          <apex:commandButton id="locationName" value="Edit" onclick="Edit('locationName')"  rerender="modal"/>                              
+          <apex:actionFunction name="Edit" action="{!showPopup}" rerender="modal"> 
+          	<apex:param name="buttonId" assignTo="{!buttonid}" value=""/>             	     
+          </apex:actionFunction>
+    	</apex:PanelGrid>           
+        <apex:outputPanel id="modal">
+	        <apex:outputPanel styleClass="popupBackground" layout="block" rendered="{!displayPopUp}"/>
+	            <apex:outputPanel styleClass="custPopup" layout="block" rendered="{!displayPopUp}">	                
+	                <apex:pageBlock title="{!modalTitle}">
+                        <apex:PanelGrid columns="2">
+                            <apex:outputLabel value="Enter new value:"/>
+                            <apex:inputText value="{!newValue}"/>							
+                            <apex:commandButton value="Save" action="{!save}" rerender="modal,config"/>
+                            <apex:commandButton value="Cancel" style="float:right;" action="{!closePopup}" rerender="modal"/>
+            			</apex:PanelGrid>
+                    </apex:pageBlock>
+                 </apex:outputPanel>
+        </apex:outputPanel>
+	</apex:form>
+  </apex:pageBlock>
+</apex:page>
