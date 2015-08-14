@@ -52,6 +52,7 @@
         <name>CustomApplication</name>
     </types>
     <types>
+        <members>Payment__c-Payment Layout</members>
 		    <members>Token__c-Token Layout</members>
         <name>Layout</name>
     </types>

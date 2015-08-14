@@ -49,6 +49,31 @@
         <modifyAllRecords>true</modifyAllRecords>
         <object>HostedPCISettings__c</object>
     </objectPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Payment__c.Token__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Payment__c.address2__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Payment__c.comment__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Payment__c.HostedPci_Response__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Payment__c.merchantRefId__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <classAccesses>
       <apexClass>HostedPCIMsgController</apexClass>
       <enabled>true</enabled>
