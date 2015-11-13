@@ -30,10 +30,11 @@ A user can see tokens stored in the database as well related payments.
 A user can see  transactions history.
 
 #Call Center:
-- Your customer service representative (CSR) will begin the process by gathering the customers order as well the additional information needed
-- Once the customer is ready to enter their credit card information the CSR will then explain to the customer that they are going to make a 3-way call to a secure credit card processing system for them to enter their card number in. - Click the button “create session” in order to get a session key
-- Call the IVR and enter session key in order to begin session 
-- Once the session key is accepted, connect the customer with a 3-way call and ask them to enter their credit card number 
+- Your customer service representative (CSR) will begin the process by gathering the customers order as well the additional information needed.
+- Once the customer is ready to enter their credit card information the CSR will then explain to the customer that they are going to make a 3-way call to a secure credit card processing system for them to enter their card number in.
+- Click the button “create session” in order to get a session key.
+- Call the IVR and enter session key in order to begin session.
+- Once the session key is accepted, connect the customer with a 3-way call and ask them to enter their credit card number. 
 - The customer will be prompted to enter their card information by the IVR, the difference with our system is that the customer is never separated from the CSR.
 - When the customer is finished entering their card information the CSR will end the 3-way call with the IVR and continue with the rest of the call. 
 - Once the session is finished a token will pop up on the CSR’s screen which can then be used to finish the transaction. 
