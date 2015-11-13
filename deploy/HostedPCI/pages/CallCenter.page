@@ -1,0 +1,475 @@
+<apex:page sidebar="false" controller="CallCenterController">
+  <head>  
+    <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-2.1.1.js')}"/>     
+    <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
+    <style type="text/css">
+        fieldset {
+            font-family: sans-serif;
+            border: 5px solid #1F497D;;
+            background: #CDE8F0;
+            border-radius: 5px;
+            padding: 15px;        
+            margin-top: 10px;
+        }
+        fieldset legend {
+            background: #1F497D;
+            color: #fff;       
+            padding: 5px 10px;
+            font-size: 32px;
+            border-radius: 5px;
+            box-shadow: 0 0 0 5px #ddd;
+            margin-left: 10px;
+            margin-right: 60px;
+            width: auto;        
+        }
+        .col-centered {
+            float: none;
+            margin: 0 auto;
+        }
+        input[type="text"], select {
+            -webkit-box-sizing: border-box;
+            -moz-box-sizing: border-box;
+            box-sizing: border-box;
+            border: 2px #cccccc solid;
+            border-radius: 10px;
+        }
+        input[type="text"]:hover, select:hover{
+            background-color: #ddddff;
+        } 
+        .toggler{
+          display:none;
+        }  
+        #message{
+            word-wrap: break-word;
+        	max-width: 823px;
+        	border-radius: 4px;
+        	background-color: #F8F8F8;
+        }        
+    </style>
+    <script type="text/javascript">
+        var currentSessionId = ""; 
+        // Initiate createSession function on createSessionButton click
+        function getSessionKey() {
+            Visualforce.remoting.Manager.invokeAction(  
+                '{!$RemoteAction.CallCenterController.getSessionKey}',                    
+                    function(resultMap,event){
+                       if(resultMap['status']== 'success'){
+                           currentSessionId = resultMap['sessionId'];
+                           
+                           $('#createSessionButton').attr("disabled", true);
+						   $('#updateProgressButton').attr("disabled", false);                           
+                       	   $('#sessionKeyResponse').text(resultMap['sessionKey'].substring(0, 3)+ '-' + 
+                                                         resultMap['sessionKey'].substring(3, 6)+ '-' + 
+                                                         resultMap['sessionKey'].substring(6, 10)+'#');                           
+                           $('#sessionStatus').text("Waiting for session setup, please punch the session ID.");
+                       }else {
+							$('#createSessionButton').attr("disabled", false);
+							$('#updateProgressButton').attr("disabled", true);
+							$('#sessionStatus').text("Error, please try again: " + resultMap['status']);
+					   } 
+					   $('#message').text(resultMap['fullMsg']);                         
+                    },
+                    {escape:true}
+                );
+        }// End of createSession
+        
+      	// Initiate updateProgress function on click
+      	function getStatus() {
+            Visualforce.remoting.Manager.invokeAction(  
+                '{!$RemoteAction.CallCenterController.getStatus}',                    
+                    currentSessionId,
+                 	function(resultMap,event){
+                       if(resultMap['status']== 'success'){
+                           var compCode = "";
+						   var tokenFlag = "";
+		  				   var sessionTaskCount = resultMap['sessionTaskCount'];
+                           
+                           for (var sessionTaskIdx = 1 ; sessionTaskIdx <= sessionTaskCount ; sessionTaskIdx++) {
+			        	   		var taskType = resultMap["sessionTask[" + sessionTaskIdx + "].type"];
+			        			var promptCode = resultMap["sessionTask[" + sessionTaskIdx + "].promptCode"];
+			        			var compCode = resultMap["sessionTask[" + sessionTaskIdx + "].completionCode"];
+			        
+								// Fill the values in the form
+								if(taskType == "ccmapsetup" && compCode == "success" && tokenFlag == "") {
+								var mappedCC = resultMap["sessionTask[" + sessionTaskIdx + "].paramValue"];
+						
+								// Fill the cc token into the form
+								$('#ccToken').val(mappedCC);
+						
+								// Flag used to know that cc was verified and filled into the form
+								tokenFlag = "ccTokenReturned";
+							} else if(taskType == "cccvvsetup" && compCode == "success" && tokenFlag == "ccTokenReturned") {
+								var mappedCVV = resultMap["sessionTask[" + sessionTaskIdx + "].respToken1"];
+						
+								// Fill the cvv token into the form
+								$('#cvvToken').val(mappedCVV);
+						
+								// Flag to know both cc and cvv been verified and filled into the form
+								tokenFlag = "ccAndCvvTokenReturned";
+									}
+							}
+                            var sessionStatus = resultMap['sessionStatus'];							
+							$('#sessionStatus').text(sessionStatus + " " + compCode);
+                            $('#message').text(resultMap['fullMsg']);  
+				
+							// Checks if cc and cvv tokens returned and validated by HPCI, if it is, no need to check progress anymore
+							if(tokenFlag == "ccAndCvvTokenReturned") {
+								// Enable/Disable the correct buttons
+								$('#updateProgressButton').attr("disabled", true);
+								$('#processPaymentButton').attr("disabled", false);
+							} else {
+								// Enable showProgressButton, disable processPaymentButton
+								$('#updateProgressButton').attr("disabled", false);
+								$('#processPaymentButton').attr("disabled", true);
+							}
+					   }
+                         
+                    },
+                    {escape:true}
+                );
+        }// End of updateProgress
+      
+        // Initiate processPayment function on processPaymentButton click
+        function processPayment() {
+            // Get values from the form
+			var ccToken = $('#ccToken').val();
+			var cvvToken = $('#cvvToken').val();
+			var cardType = $("#cardType option:selected").val();
+			var expiryMonth = $("#expiryMonth").val();
+	    	var expiryYear = $("#expiryYear").val();
+			var firstName = $("#firstName").val();
+			var lastName = $("#lastName").val();
+			var address1 = $("#address1").val();
+			var address2 = $("#address2").val();
+			var city = $("#city").val();
+			var state = $("#state").val();
+			var zip = $("#zip").val();
+			var country = $("#country option:selected").val();
+			var currency = $("#currency option:selected").val();
+		    var paymentAmount = $("#amount").val();
+			var paymentComments = $("#comment").val();
+			var paymentProfile = $("#paymentProfile option:selected").val();
+ 
+            Visualforce.remoting.Manager.invokeAction(  
+                '{!$RemoteAction.CallCenterController.processPayment}', 
+                    ccToken, cvvToken, cardType, expiryMonth, expiryYear, firstName,
+                	lastName, address1, address2, city, state, zip, country,
+                	currency, paymentAmount, paymentComments, paymentProfile,
+                    function(resultMap,event){
+                       if(resultMap['pxyResponse.responseStatus'] == "approved") {
+							$('#processPaymentButton').attr("disabled", true);
+							$('#paymentResetButton').attr("disabled", false);
+						}                  
+                        $('#message').text(resultMap['fullMsg']);
+						$('#paymentStatus').text(resultMap['pxyResponse.responseStatus']);
+						$('#referenceId').text(resultMap['pxyResponse.processorRefId']);
+						$('#paymentResponseCode').text(resultMap['pxyResponse.responseStatus.code']);
+						// Replace "+" in the string with " "
+						$('#paymentResponseMessage').text(
+                            (resultMap['pxyResponse.responseStatus.description']).replace(/\+/g, ' '));                  
+                    },
+                    {escape:true}
+                );
+        }// End of processPayment
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function() {            
+            $('#paymentResetButton').click(function () {
+                $('#CCAcceptForm')[0].reset();                
+                $('#paymentStatus').text('');		
+                $('#referenceId').text('');		
+                $('#paymentResponseCode').text('');		
+                $('#paymentResponseMessage').text('');
+                $('#message').text('');
+				// Reset currentSessionId to default value which is ""
+				currentSessionId = "";
+                $('#sessionStatus').text('');
+                $('#sessionKeyResponse').text('');  
+                $('#createSessionButton').attr('disabled', false);
+                $('#paymentResetButton').attr('disabled', false);
+            }); 
+            
+            $('#fullMessageToggle').click(function() {  
+                  $(this).text($(this).text()=='Show full message'?'Hide message':'Show full message');
+                  $('.toggler').toggle();              
+            }); 
+        });        
+    </script>    
+  </head>
+  <div class="col-md-7 col-centered">
+  <form id="CCAcceptForm" action ="" method="post">        
+      <fieldset>
+          <!-- Form Name -->
+          <apex:messages id="error" styleClass="errorMsg" layout="table" style="margin-top:1em;"/>
+          <legend>IVR Checkout</legend>
+              <fieldset>
+              
+                <legend>Session Information</legend>
+                <div class="row">
+                        <div class="col-xs-6 col-sm-3 col-md-4">
+                          <!-- Create Session button -->
+                          <button type="button" value="Create Session" class="btn btn-primary" id="createSessionButton"
+                                  style ="background-image: linear-gradient(to bottom, #428BCA 0px, #2D6CA2 100%);"
+                                  onClick='getSessionKey()'>Create Session</button>
+                        </div>  
+                        <div class="col-xs-6 col-sm-3 col-md-4">
+                            <label>Session Key: </label>
+                            <div id="sessionKeyResponse"></div>
+                        </div>                 
+                </div>
+                <br/>
+                <div class="row">                        
+                        <div class="col-xs-6 col-sm-3 col-md-4">
+                            <!-- Update progress button -->
+                            <button id="updateProgressButton" type="button"  value="Update Progress" 
+                                    class="btn btn-primary" disabled="true" onClick='getStatus()'
+                                    style ="background-image: linear-gradient(to bottom, #428BCA 0px, #2D6CA2 100%);">Update Progress</button><br />
+                        </div>
+                        <div class="col-xs-6 col-sm-3 col-md-4">
+                            <label>Session Status: </label>
+                            <div id="sessionStatus"> </div>
+                        </div>
+                </div>
+                
+                <br/>  
+              </fieldset> 
+              <fieldset>
+                  <legend>Credit Card Information</legend>
+                  <!-- Error message for invalid credit card -->
+                  <div id="errorMessage" style="display:none;color:red"><label>Invalid card number, try again</label><br/></div>
+                  <div class="row">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
+                            <!-- Select credit card -->
+                            <label for="cardType">Card Type</label>
+                      </div>
+                  </div><!-- row -->
+                  <div class="row">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
+                             <!-- id is used in HostedPCIMsg page -->
+                             <select id="cardType" name="cardType" class="selectpicker">
+                                 <option value="visa">Visa</option>
+                                 <option value="mastercard">MasterCard</option>
+                                 <option value="amex">American Express</option>
+                             </select>
+                      </div>
+                  </div><!-- row -->
+                  <div class="row">
+				  	<div class="col-xs-4 col-sm-3 col-md-4">
+						<label>Credit Card Token</label><br />
+                        <input id="ccToken" type="text" name="ccToken" placeholder="Automatically Filled"/>
+					</div>
+					<div class="col-xs-6 col-sm-5 col-md-5">
+                        <label>CVV Token</label><br />
+                        <input id="cvvToken" type="text" name="cvvToken" placeholder="Automatically Filled"/>
+					</div>
+  				 </div><!-- row -->
+                  <!-- Input row (exp, month, cvv) -->
+                  <div class="row">
+                      <div class="col-xs-5 col-sm-4 col-md-4">
+                          <label>Expiry MM/YY</label>
+                              <!-- id is used in HostedPCIMsg page -->
+                      </div>
+                  </div><!-- row -->
+                  <!-- Input row (exp, month, cvv) -->
+                  <div class="row">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
+                          <select id="expiryMonth" name="expiryMonth" class="selectpicker">
+                              <option value="01">01 - January</option>
+                              <option value="02">02 - February</option>
+                              <option value="03">03 - March</option>
+                              <option value="04">04 - April</option>
+                              <option value="05">05 - May</option>
+                              <option value="06">06 - June</option>
+                              <option value="07">07 - July</option>
+                              <option value="08">08 - August</option>
+                              <option value="09">09 - September</option>
+                              <option value="10">10 - October</option>
+                              <option value="11">11 - November</option>
+                              <option value="12">12 - December</option>
+                          </select>
+                      </div>
+                      <div class="col-xs-4 col-sm-3 col-md-5">        
+                      <!-- id is used in HostedPCIMsg page -->
+                          <select id="expiryYear" name="expiryYear" class="selectpicker">
+                              <option value="15">2015</option>
+                              <option value="16">2016</option>
+                              <option value="17">2017</option>
+                              <option value="18">2018</option>
+                              <option value="19">2019</option>
+                              <option value="20">2020</option>
+                              <option value="21">2021</option>
+                              <option value="22">2022</option>
+                              <option value="23">2023</option>
+                              <option value="24">2024</option>
+                              <option value="25">2025</option>
+                              <option value="26">2026</option>
+                          </select>
+                      </div>
+                  </div><!-- row -->
+              </fieldset>
+              <fieldset>
+                  <legend>Personal Information</legend>
+                  <div class="row">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
+                          <label>First Name:</label>
+                      </div>
+                      <div class="col-xs-4 col-sm-3 col-md-5">
+                          <input id="firstName" type="text" name="firstName"></input>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
+                          <label>Last Name:</label>
+                      </div>
+                      <div class="col-xs-4 col-sm-3 col-md-5">
+                          <input id="lastName" type="text" name="lastName"></input>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
+                          <label>Address Line 1:</label>
+                      </div>
+                      <div class="col-xs-4 col-sm-3 col-md-5">
+                          <input id="address1" type="text" name="address1"></input>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
+                          <label>Address Line 2:</label>
+                      </div>
+                      <div class="col-xs-4 col-sm-3 col-md-5">
+                          <input id="address2" type="text" name="address2"></input>
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
+                          <label>City:</label>
+                      </div>
+                      <div class="col-xs-4 col-sm-3 col-md-5">
+                          <input id="city" type="text" name="city"></input>
+                      </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-xs-4 col-sm-3 col-md-4">
+                              <label>State / Province:</label>
+                          </div>
+                          <div class="col-xs-4 col-sm-3 col-md-5">
+                              <input id="state" type="text" name="state"></input>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-xs-4 col-sm-3 col-md-4">
+                              <label>Zip / Postal Code:</label>
+                          </div>
+                          <div class="col-xs-4 col-sm-3 col-md-5">
+                              <input id="zip" type="text" name="zip"></input>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-xs-4 col-sm-3 col-md-4">
+                              <label>Country:</label>
+                          </div>
+                          <div class="col-xs-4 col-sm-3 col-md-5">
+                              <select id="country" name="country">
+                                  <option value="CAN">Canada</option>
+                                  <option value="US">United States</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-xs-4 col-sm-3 col-md-4">
+                              <label>Payment Comments:</label>
+                          </div>
+                          <div class="col-xs-4 col-sm-3 col-md-5">
+                              <input id="comment" type="text" name="comment"></input>
+                          </div>
+                      </div>                      
+                      <div class="row">
+                          <div class="col-xs-4 col-sm-3 col-md-4">
+                              <label>Currency:</label>
+                          </div>
+                          <div class="col-xs-4 col-sm-3 col-md-5">
+                              <select id="currency" name="currency">
+                                  <option value="CAD">Canadian Dollar</option>
+                                  <option value="USD">US Dollar</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-xs-4 col-sm-3 col-md-4">
+                              <label>Payment Amount:</label>
+                          </div>
+                          <div class="col-xs-4 col-sm-3 col-md-5">
+                              <input id="amount" type="text" name="amount"></input>
+                           </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-xs-4 col-sm-3 col-md-4">
+                              <label>Payment Profile:</label>
+                          </div>
+                          <div class="col-xs-4 col-sm-3 col-md-5">
+                              <select id="paymentProfile" name="paymentProfile">
+                                  <option value="DEF">DEF - Currency: USD</option>
+                                  <option value="DEF_MONERIS">DEF_MONERIS - Currency: CAD</option>
+                                  <option value="DEF_MONERIS">DEF_MONERIS - Currency: USD</option>
+                               </select>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-xs-6 col-sm-3 col-md-4">
+                              <!-- Submit button -->
+                              <button type="button" value="Submit" disabled="true" class="btn btn-primary" 
+                                      style ="background-image: linear-gradient(to bottom, #428BCA 0px, #2D6CA2 100%);"
+                                      id="processPaymentButton" onClick='processPayment()'>Process Payment</button>
+                          </div>  
+                          <div class="col-xs-6 col-sm-3 col-md-4">
+                              <!-- Reset button -->
+                                <button id="paymentResetButton" type="button" disabled="true" value="Reset Payment" class="btn btn-primary"
+                                    style ="background-image: linear-gradient(to bottom, #428BCA 0px, #2D6CA2 100%);">Reset Payment</button><br />
+                          </div>
+                      </div>
+                      <br />  					  
+              </fieldset>
+			  <fieldset>
+						<legend>Transaction Summary</legend>
+						<div class="row">
+							<div class="col-md-8">
+								<label>Payment Status: </label>
+								<div id="paymentStatus" style="word-wrap: break-word;"></div><br />
+							</div>	
+						</div><!-- row -->
+						<div class="row">
+							<div class="col-md-8">
+								<label>Reference ID: </label>
+								<div id="referenceId" style="word-wrap: break-word;"></div><br />
+							</div>	
+						</div><!-- row -->
+						<div class="row">
+							<div class="col-md-8">
+								<label>Response Code: </label>
+								<div id="paymentResponseCode" style="word-wrap: break-word;"></div><br />
+							</div>	
+						</div><!-- row -->
+						<div class="row">
+							<div class="col-md-8">
+								<label>Response Message: </label>
+								<div id="paymentResponseMessage" style="word-wrap: break-word;"></div><br />
+							</div>	
+						</div><!-- row -->
+						<div class="row">
+                            <div class="col-md-12">
+								<button id="fullMessageToggle" type="button">Show full message</button>
+       						 	<div class="toggler">
+          							<div id="effect" >
+          								<!-- Gets full plain message received from Hosted PCI  -->          						              							
+                                        <div id="message"></div>                                        
+          							</div>
+                                </div>
+        					</div>
+						</div><!-- row -->
+			  </fieldset>
+       </fieldset>
+  </form>  
+  </div> 
+</apex:page>

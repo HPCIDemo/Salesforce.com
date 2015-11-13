@@ -6,5 +6,6 @@
     <tab>Token__c</tab>
     <tab>Payment__c</tab>
     <tab>paymentTerminal</tab>
+    <tab>callCenter</tab>
     <tab>HostedPCI_Settings</tab>
 </CustomApplication>

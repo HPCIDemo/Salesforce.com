@@ -7,6 +7,10 @@
         <visible>true</visible>
     </applicationVisibilities>
     <tabSettings>
+      <tab>callCenter</tab>
+      <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
       <tab>HostedPCI_Settings</tab>
       <visibility>Visible</visibility>
     </tabSettings>
@@ -75,6 +79,14 @@
         <readable>true</readable>
     </fieldPermissions>
     <classAccesses>
+        <apexClass>CallCenterController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>CallCenterController_Test</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
       <apexClass>HostedPCIMsgController</apexClass>
       <enabled>true</enabled>
     </classAccesses>
@@ -95,6 +107,10 @@
       <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
+        <apexClass>mock_HostedPciServicePhoneAPIUtil</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
       <apexClass>PaymentTerminalController</apexClass>
       <enabled>true</enabled>
     </classAccesses>
@@ -110,6 +126,10 @@
       <apexClass>HostedPciServiceUtil</apexClass>
       <enabled>true</enabled>
     </classAccesses>
+    <pageAccesses>
+        <apexPage>CallCenter</apexPage>
+        <enabled>true</enabled>
+    </pageAccesses>
     <pageAccesses>
         <apexPage>HostedPCISettings</apexPage>
         <enabled>true</enabled>

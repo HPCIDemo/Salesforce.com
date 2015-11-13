@@ -25,6 +25,7 @@ public with  sharing class PaymentTerminalController {
                 hostedPciConf.endPointAuth__c = '/iSynSApp/paymentAuth.action';
                 hostedPciConf.endPointBaseUrl__c = 'https://api-sampqa1stg.c1.hostedpci.com';
                 hostedPciConf.endPointSale__c = '/iSynSApp/paymentSale.action';
+                hostedPciConf.endPoint_manageCCMapPhoneAPI__c = '/iSynSApp/manageCCMapPhoneAPI.action';
                 hostedPciConf.siteId__c = '528160';
 
                 insert hostedPciConf;

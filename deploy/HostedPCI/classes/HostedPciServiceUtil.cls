@@ -3,7 +3,7 @@ public class HostedPciServiceUtil{
     public static String httpCalloutHostedPciAuthOnly(Map<String,String> hpciRequestParamMap){
         // Assuming the full request param map is ready
         // Url Endpoint is made of the api url which is given by
-        // HostedPCI + "iSynSApp/paymentAuth.action"                
+        // HostedPCI + "/iSynSApp/paymentAuth.action"                
         string endPoint = HostedPCISettings__c.getInstance().endPointAuth__c;
         string resultMsg = callUrl(endPoint, hpciRequestParamMap);
         
@@ -13,7 +13,7 @@ public class HostedPciServiceUtil{
     public static String httpCalloutHostedPciCaptureOnly(String processorRefId, Map<String,String> hpciRequestParamMap){
         // Assuming the full request param map is ready
         // Url Endpoint is made of the api url which is given by
-        // HostedPCI + "iSynSApp/paymentCapture.action"                                
+        // HostedPCI + "/iSynSApp/paymentCapture.action"                                
         string endPoint = HostedPCISettings__c.getInstance().endPointCapture__c;
         hpciRequestParamMap.put('pxyTransaction.processorRefId', processorRefId);
         string resultMsg = callUrl(endPoint, hpciRequestParamMap);
@@ -24,7 +24,7 @@ public class HostedPciServiceUtil{
     public static String httpCalloutHostedPciCreditOnly(String processorRefId, Map<String,String> hpciRequestParamMap){
         // Assuming the full request param map is ready
         // Url Endpoint is made of the api url which is given by
-        // HostedPCI + "iSynSApp/paymentCredit.action"                
+        // HostedPCI + "/iSynSApp/paymentCredit.action"                
         string endPoint = HostedPCISettings__c.getInstance().endPointCredit__c;
         hpciRequestParamMap.put('pxyTransaction.processorRefId', processorRefId);
         string resultMsg = callUrl(endPoint, hpciRequestParamMap);
@@ -35,7 +35,7 @@ public class HostedPciServiceUtil{
     public static String httpCalloutHostedPciSaleOnly(Map<String,String> hpciRequestParamMap){        
         // Assuming the full request param map is ready
         // Url Endpoint is made of the api url which is given by
-        // HostedPCI + "iSynSApp/paymentSale.action"                
+        // HostedPCI + "/iSynSApp/paymentSale.action"                
         string endPoint = HostedPCISettings__c.getInstance().endPointSale__c;
         string resultMsg = callUrl(endPoint, hpciRequestParamMap);
         
@@ -45,9 +45,19 @@ public class HostedPciServiceUtil{
     public static String httpCalloutHostedPciVoidOnly(String processorRefId, Map<String,String> hpciRequestParamMap){        
         // Assuming the full request param map is ready
         // Url Endpoint is made of the api url which is given by
-        // HostedPCI + "iSynSApp/paymentVoid.action"  
+        // HostedPCI + "/iSynSApp/paymentVoid.action"  
         string endPoint = HostedPCISettings__c.getInstance().endPointVoid__c;
         hpciRequestParamMap.put('pxyTransaction.processorRefId', processorRefId);
+        string resultMsg = callUrl(endPoint, hpciRequestParamMap);
+        
+        return resultMsg;        
+    }
+    
+    public static String httpCalloutHostedPciManageCCMApPhoneAPI(Map<String,String> hpciRequestParamMap){        
+        // Assuming the full request param map is ready
+        // Url Endpoint is made of the api url which is given by
+        // HostedPCI + "/iSynSApp/manageCCMapPhoneAPI.action"  
+        string endPoint = HostedPCISettings__c.getInstance().endPoint_manageCCMapPhoneAPI__c;
         string resultMsg = callUrl(endPoint, hpciRequestParamMap);
         
         return resultMsg;        

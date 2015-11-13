@@ -1,38 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
-        <members>Bootstrap_3_2_0</members>
-        <members>HPCI_Javascript</members>
-        <name>StaticResource</name>
-    </types>
-	<types>
-        <members>HostedPci</members>
-        <name>RemoteSiteSetting</name>
-    </types>
-	<types>
-        <members>My_documents</members>
-        <members>My_documents/logo.png</members>
-        <name>Document</name>
-    </types>
-	<types>
-        <members>HostedPCISettings__c</members>
-        <members>Payment__c</members>
-        <members>Token__c</members>
-        <name>CustomObject</name>
-    </types>
-	<types>
+        <members>CallCenterController</members>
+        <members>CallCenterController_Test</members>
         <members>HostedPCIMsgController</members>
         <members>HostedPCIMsgController_Test</members>
         <members>HostedPCISettingsController</members>
         <members>HostedPCISettingsController_Test</members>
         <members>HostedPciServiceUtil</members>
         <members>PaymentTerminalController</members>
+        <members>PaymentTerminalController_Test</members>
         <members>PaymentTerminalMsgController</members>
         <members>PaymentTerminalMsgController_Test</members>
+        <members>mock_HostedPciServicePhoneAPIUtil</members>
         <members>mock_HostedPciServiceUtil</members>
         <name>ApexClass</name>
     </types>
     <types>
+        <members>CallCenter</members>
         <members>HostedPCIDemo</members>
         <members>HostedPCIMsg</members>
         <members>HostedPCISettings</members>
@@ -40,25 +25,46 @@
         <members>PaymentTerminalMsg</members>
         <name>ApexPage</name>
     </types>
-	<types>
-        <members>HostedPCI_Settings</members>
-        <members>Payment__c</members>
-        <members>Token__c</members>
-        <members>paymentTerminal</members>
-        <name>CustomTab</name>
-    </types>
     <types>
         <members>HostedPCI</members>
         <name>CustomApplication</name>
     </types>
     <types>
-        <members>Payment__c-Payment Layout</members>
-		    <members>Token__c-Token Layout</members>
-        <name>Layout</name>
+        <members>HostedPCISettings__c</members>
+        <members>Payment__c</members>
+        <members>Token__c</members>
+        <name>CustomObject</name>
     </types>
     <types>
-		    <members>HostedPCI_Developer</members>
+        <members>HostedPCI_Settings</members>
+        <members>Payment__c</members>
+        <members>Token__c</members>
+        <members>callCenter</members>
+        <members>paymentTerminal</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>My_documents</members>
+        <members>My_documents/logo.png</members>
+        <name>Document</name>
+    </types>
+    <types>
+        <members>Payment__c-Payment Layout</members>
+        <members>Token__c-Token Layout</members>
+        <name>Layout</name>
+    </types>    
+    <types>
+        <members>HostedPCI_Developer</members>
         <name>PermissionSet</name>
+    </types>
+    <types>
+        <members>HostedPci</members>
+        <name>RemoteSiteSetting</name>
+    </types>
+    <types>
+        <members>Bootstrap_3_2_0</members>
+        <members>HPCI_Javascript</members>
+        <name>StaticResource</name>
     </types>
     <version>34.0</version>
 </Package>

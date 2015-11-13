@@ -3,6 +3,6 @@
     <apiVersion>34.0</apiVersion>
     <availableInTouch>false</availableInTouch>
     <confirmationTokenRequired>false</confirmationTokenRequired>
-    <description>HostedPCI Connection Settings</description>
-    <label>HostedPCI Settings</label>
+    <description>IVR call center.</description>
+    <label>Call Center</label>
 </ApexPage>
