@@ -126,6 +126,14 @@
       <apexClass>HostedPciServiceUtil</apexClass>
       <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+      <apexClass>ThreeDSecPinFrameController</apexClass>
+      <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+      <apexClass>ThreeDSecPinFrameController_Test</apexClass>
+      <enabled>true</enabled>
+    </classAccesses>
     <pageAccesses>
         <apexPage>CallCenter</apexPage>
         <enabled>true</enabled>
@@ -148,6 +156,10 @@
     </pageAccesses>
     <pageAccesses>
         <apexPage>PaymentTerminalMsg</apexPage>
+        <enabled>true</enabled>
+    </pageAccesses>
+    <pageAccesses>
+        <apexPage>ThreeDSecPinFrame</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
 </PermissionSet>

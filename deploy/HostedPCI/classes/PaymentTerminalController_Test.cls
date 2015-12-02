@@ -7,6 +7,8 @@ public class PaymentTerminalController_Test {
     private static void init(){
         pageRef = Page.PaymentTerminal;
         Test.setCurrentPage(pageRef);
+        //set our mock class for callouts
+		Test.setMock(HttpCalloutMock.class, new	mock_HostedPciServiceUtil());
         controller = new PaymentTerminalController();
     }
     
@@ -23,5 +25,38 @@ public class PaymentTerminalController_Test {
         //stoptest
 		test.StopTest();        
     }
-
+    
+    public static testMethod void PaymentTerminalController_ProcessPayment_Test(){
+        Map<String,String> hostedPciMsgMap;
+        String fullMsg;
+        
+        init();
+        
+        //start the test 
+		test.StartTest();
+        	hostedPciMsgMap = PaymentTerminalController.processPayment('4111000570001111', '200', 'Visa', '01',
+                    '2016', 'Test','Test', 'Place', '', 'Toronto', 'On', 'l5k 7o2', 'Canada',
+                	'CAD', '10', 'sale', 'DEF','');
+        	fullMsg = hostedPciMsgMap.get('fullMsg');
+        	System.assertNotEquals(null, fullMsg);
+        //stoptest
+		test.StopTest();
+    }
+    
+    public static testMethod void PaymentTerminalController_ProcessPayment3DSec_Test(){
+        Map<String,String> hostedPciMsgMap;
+        String fullMsg;
+        
+        init();
+        
+        //start the test 
+		test.StartTest();
+        	hostedPciMsgMap = PaymentTerminalController.processPayment('4111000570001111', '200', 'Visa', '01',
+                    '2016', 'Test','Test', 'Place', '', 'Toronto', 'On', 'l5k 7o2', 'Canada',
+                	'CAD', '10', 'sale', 'DEF','verifyenroll');
+        	fullMsg = hostedPciMsgMap.get('fullMsg');
+        	System.assertNotEquals(null, fullMsg);
+        //stoptest
+		test.StopTest();
+    }
 }

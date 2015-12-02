@@ -1,0 +1,249 @@
+<apex:page sidebar="false" controller="ThreeDSecPinFrameController">
+    <head>  
+        <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-2.1.1.js')}"/>  
+        <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery.ba-postmessage.2.0.0.min.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'hpci-cciframe-1.0.js')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
+        
+        <style type="text/css">
+            fieldset {
+                font-family: sans-serif;
+                border: 5px solid #1F497D;;
+                background: #CDE8F0;
+                border-radius: 5px;
+                padding: 15px;        
+                margin-top: 10px;
+            }
+            fieldset legend {
+                background: #1F497D;
+                color: #fff;       
+                padding: 5px 10px;
+                font-size: 32px;
+                border-radius: 5px;
+                box-shadow: 0 0 0 5px #ddd;
+                margin-left: 10px;
+                margin-right: 60px;
+                width: auto;        
+            }
+            .col-centered {
+                float: none;
+                margin: 0 auto;
+            }
+            input[type="text"], select {
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                border: 2px #cccccc solid;
+                border-radius: 10px;
+            }
+            input[type="text"]:hover, select:hover{
+                background-color: #ddddff;
+            } 
+            .toggler{
+              display:none;
+            }                
+            #message{
+                word-wrap: break-word;
+                max-width: 823px;
+                border-radius: 4px;
+                background-color: #F8F8F8;
+            }
+            #threeDSecFrame{
+            	border:none;
+            }
+            .threeDPin{
+            	display:none;
+            }
+            .trSummary{
+            	display:none;
+            }
+        </style>
+        <script type="text/javascript">
+        	var hpciCC3DSecPinFrameFullUrl;
+        	var siteId;
+        	var fullParentQStr;
+        	var fullParentHost;
+			var hpciCCFrameHost = "https://cc.hostedpci.com";
+        	var authTxnId;
+        
+            jQuery(document).ready(function() { 
+                siteId = document.getElementById("{!$Component.config.siteId}").value;
+                fullParentQStr = document.getElementById("{!$Component.config.fullParentQStr}").value;
+                fullParentHost = document.getElementById("{!$Component.config.fullParentHost}").value;
+                authTxnId = document.getElementById("{!$Component.config.authTxnId}").value;
+                
+                hpciCC3DSecPinFrameFullUrl = "https://cc.hostedpci.com/iSynSApp/appUserVerify3DResp!verificationForm.action?"
+                +"sid=" + siteId
+                +"&authTxnId=" + authTxnId
+                +"&fullParentHost=https://" + fullParentHost
+                +"&fullParentQStr=" + fullParentQStr;
+ 
+                document.getElementById("threeDSecFrame").src=hpciCC3DSecPinFrameFullUrl;
+                
+                jQuery('#fullMessageToggle').click(function() {  
+                  jQuery(this).text(jQuery(this).text()=='Show full message'?'Hide message':'Show full message');
+                  jQuery('.toggler').toggle();              
+            	}); 
+                                                
+             });                        
+            
+        // Initiate processPayment function on processPaymentButton click
+        function processPayment() { 
+            var ccToken = document.getElementById("{!$Component.config.ccNum}").value;
+            var cvvToken = document.getElementById('{!$Component.config.ccCVV}').value;
+            var cardType = document.getElementById('{!$Component.config.cardType}').value;
+            var expiryMonth = document.getElementById("{!$Component.config.expiryMonth}").value;
+            var expiryYear = document.getElementById("{!$Component.config.expiryYear}").value;
+            var firstName = document.getElementById("{!$Component.config.firstName}").value;
+            var lastName = document.getElementById("{!$Component.config.lastName}").value;
+            var address1 = document.getElementById("{!$Component.config.address1}").value;
+            var address2 = document.getElementById("{!$Component.config.address2}").value;
+            var city = document.getElementById("{!$Component.config.city}").value;
+            var state = document.getElementById("{!$Component.config.state}").value;
+            var zip = document.getElementById("{!$Component.config.zip}").value;
+            var country = document.getElementById("{!$Component.config.country}").value;
+            var currency = document.getElementById("{!$Component.config.currency}").value;
+            var paymentAmount = document.getElementById("{!$Component.config.amount}").value;
+            var paymentComments = document.getElementById("{!$Component.config.comment}").value;
+            var paymentProfile = document.getElementById("{!$Component.config.paymentProfile}").value;
+ 			var action3DSec =  jQuery("#action3DSec").val();
+            var authTxnId = document.getElementById("{!$Component.config.authTxnId}").value;
+                                   
+            Visualforce.remoting.Manager.invokeAction(  
+                '{!$RemoteAction.ThreeDSecPinFrameController.processPayment}', 
+                    ccToken, cvvToken, cardType, expiryMonth, expiryYear, firstName,
+                    lastName, address1, address2, city, state, zip, country,
+                    currency, paymentAmount, paymentComments, paymentProfile, action3DSec,
+                    authTxnId,
+                    function(resultMap,event){ 
+                        jQuery('#threeDSecFrame').addClass("threeDPin");
+                        jQuery('#trSummary').removeClass("trSummary");
+                        jQuery('#message').text(resultMap['fullMsg']);
+                        jQuery('#paymentStatus').text(resultMap['pxyResponse.responseStatus']);
+                        jQuery('#referenceId').text(resultMap['pxyResponse.processorRefId']);
+                        jQuery('#paymentResponseCode').text(resultMap['pxyResponse.responseStatus.code']);
+                        // Replace "+" in the string with " 
+                        jQuery('#paymentResponseMessage').text(
+                                (resultMap['pxyResponse.responseStatus.description']).replace(/\+/g, ' '));                                                               
+                    },
+                    {escape:true}
+                );
+       		 }// End of processPayment
+			         	
+			 var hpciSiteErrorHandler = function(errorCode, errorMsg) {
+                // Please the following alert to properly display the error message
+                //alert("Error while processing credit card code:" + errorCode + "; msg:"   + errorMsg);
+                document.getElementById('errorMessage').style.display = 'block';
+        	 }
+                         
+             var hpci3DSitePINSuccessHandler = function() {
+      	       // name of the form submission for ecommerce site
+               var pendingForm = document.getElementById("CCAcceptForm")
+               processPayment();               
+             }
+
+             var hpci3DSitePINErrorHandler = function() {
+      	       // Adapt the following message / action to match your required experience
+               alert("Could not verify PIN for the credit card");
+             }
+
+             var hpciCCPreliminarySuccessHandler = function(hpciCCTypeValue, hpciCCBINValue, hpciCCValidValue, hpciCCLengthValue) {
+                // Adapt the following message / action to match your required experience
+                alert("Received preliminary credit card details");
+             }
+    
+             var hpciCVVPreliminarySuccessHandler = function(hpciCVVLengthValue) {
+                // Adapt the following message / action to match your required experience
+                alert("Received preliminary CVV details");
+             }
+        
+        	 
+      </script>
+    </head>
+    <div class="col-md-7 col-centered">
+    	<form id="CCAcceptForm" action ="" method="post"> 
+            <apex:messages id="error" styleClass="errorMsg" layout="table" style="margin-top:1em;"/>
+        	<fieldset >
+                <legend>Web Checkout 3D Secure</legend>
+                <!-- Error message for invalid credit card -->
+                <div id="errorMessage" style="display:none;color:red"><label>Invalid card number, try again</label><br/></div>
+                <iframe id="threeDSecFrame" name="threeDSecFrame" onload="receiveHPCIMsg()" src="" width="450" height="400">
+						If you can see this, your browser doesn't understand IFRAME.
+				</iframe>
+            <fieldset id="trSummary" class="trSummary">
+            	<legend>Transaction Summary</legend>
+                	<div class="row">
+                    	<div class="col-md-8">
+                        	<label>Payment Status: </label>
+                            <div id="paymentStatus" style="word-wrap: break-word;"></div><br />
+                        </div>  
+                        </div><!-- row -->
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label>Reference ID: </label>
+                                <div id="referenceId" style="word-wrap: break-word;"></div><br />
+                            </div>  
+                        </div><!-- row -->
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label>Response Code: </label>
+                                <div id="paymentResponseCode" style="word-wrap: break-word;"></div><br />
+                            </div>  
+                        </div><!-- row -->
+                        <div class="row">
+                            <div class="col-md-8">
+                                <label>Response Message: </label>
+                                <div id="paymentResponseMessage" style="word-wrap: break-word;"></div><br />
+                            </div>  
+                        </div><!-- row -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button id="fullMessageToggle" type="button">Show full message</button>
+                                <apex:form >
+                                    <div style="float:right;">            
+                                        <apex:commandButton action="{!back}" value="Back"/>
+                                    </div>   
+                                </apex:form>   
+                                <div class="toggler">
+                                    <div id="effect" >
+                                        <!-- Gets full plain message received from Hosted PCI  -->                                                                          
+                                        <div id="message"></div>                                        
+                                    </div>
+                                </div>
+                            </div>
+                        </div><!-- row -->
+                  		<div class="row">
+                          <!-- Hidden rows that are required by the iframe -->
+                          <div class="col-xs-6 col-sm-3 col-md-4">                             
+                              <input type="hidden" id="action3DSec" name="action3DSec" value="verifyresp" class="form-control"/>                          	  
+						  </div>
+                        </div>
+              </fieldset>
+            </fieldset>                                  
+        </form>
+    </div>
+    <apex:form id="config">
+        <apex:inputHidden id="siteId" value="{!siteId}"/>
+        <apex:inputHidden id="fullParentQStr" value="{!fullParentQStr}"/>
+        <apex:inputHidden id="fullParentHost" value="{!fullParentHost}"/>
+        <apex:inputHidden id="authTxnId"  value="{!authTxnId}" />
+        <apex:inputHidden id="ccNum" value="{!ccNum}"/>
+        <apex:inputHidden id="ccCVV" value="{!ccCVV}"/>
+        <apex:inputHidden id="cardType" value="{!cardType}"/>
+        <apex:inputHidden id="expiryMonth" value="{!expiryMonth}"/>
+        <apex:inputHidden id="expiryYear" value="{!expiryYear}"/>
+        <apex:inputHidden id="firstName" value="{!firstName}"/>
+        <apex:inputHidden id="lastName" value="{!lastName}"/>
+        <apex:inputHidden id="address1" value="{!address1}"/>
+        <apex:inputHidden id="address2" value="{!address2}"/>
+        <apex:inputHidden id="city" value="{!city}"/>
+        <apex:inputHidden id="state" value="{!state}"/>
+        <apex:inputHidden id="zip" value="{!zip}"/>
+        <apex:inputHidden id="country" value="{!country}"/>
+        <apex:inputHidden id="currency" value="{!hpciCurrency}"/>
+        <apex:inputHidden id="amount" value="{!paymentAmount}"/>
+        <apex:inputHidden id="comment" value="{!paymentComments}"/>
+        <apex:inputHidden id="paymentProfile" value="{!paymentProfile}"/>        
+  	</apex:form>
+</apex:page>

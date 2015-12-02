@@ -1,20 +1,60 @@
-public class PaymentTerminalController {
+public class ThreeDSecPinFrameController {
     public string SiteId{get ; set;}
-    public string LocationName{get; set;}
     public string fullParentQStr{get; set;}
     public string fullParentHost{get; set;}
-            
+	public string authTxnId{get; set;}
+    public string ccNum{get; set;}
+    public string ccCVV{get; set;}
+    public string cardType{get; set;}
+    public string expiryMonth{get; set;}
+    public string expiryYear{get; set;}
+    public string firstName{get; set;}
+    public string lastName{get; set;}
+    public string address1{get; set;}
+    public string address2{get; set;}
+    public string city{get; set;}
+    public string state{get; set;}
+    public string zip{get; set;}
+    public string country{get; set;}
+    public string hpciCurrency{get; set;}
+    public string paymentAmount{get; set;}
+    public string paymentComments{get; set;}
+    public string paymentProfile{get; set;}
+    
+    public ThreeDSecPinFrameController(){
+        SiteId = HostedPCISettings__c.getInstance().siteId__c;
+        fullParentQStr = Page.ThreeDSecPinFrame.getUrl();
+        fullParentHost = ApexPages.currentPage().getHeaders().get('Host');
+        authTxnId = ApexPages.currentPage().getParameters().get('authTxnId');
+        ccNum = ApexPages.currentPage().getParameters().get('ccNum');
+        ccCVV = ApexPages.currentPage().getParameters().get('ccCVV');                
+        cardType = ApexPages.currentPage().getParameters().get('cardType');
+        expiryMonth = ApexPages.currentPage().getParameters().get('expiryMonth');
+        expiryYear = ApexPages.currentPage().getParameters().get('expiryYear');
+        firstName = ApexPages.currentPage().getParameters().get('firstName');
+        lastName = ApexPages.currentPage().getParameters().get('lastName');
+        address1 = ApexPages.currentPage().getParameters().get('address1');
+        address2 = ApexPages.currentPage().getParameters().get('address2');
+        city = ApexPages.currentPage().getParameters().get('city');
+        state = ApexPages.currentPage().getParameters().get('state');
+        zip = ApexPages.currentPage().getParameters().get('zip');
+        country = ApexPages.currentPage().getParameters().get('country');
+        hpciCurrency = ApexPages.currentPage().getParameters().get('currency');
+        paymentAmount = ApexPages.currentPage().getParameters().get('amount');
+        paymentComments = ApexPages.currentPage().getParameters().get('comment');
+        paymentProfile = ApexPages.currentPage().getParameters().get('paymentProfile');                       
+    }
+
     @RemoteAction
     public static Map<String,String> processPayment(String ccToken, String cvvToken, String cardType,
            String expiryMonth, String expiryYear, String firstName, String lastName, String address1,
            String address2, String city, String state, String zip, String country, String hpciCurrency,
-           String paymentAmount, String paymentComments, String paymentProfile, String action3DSec){           	
-        
+           String paymentAmount, String paymentComments, String paymentProfile, String action3DSec,
+           String authTxnId){           	
+                        
         // Setup request param map        
         Map<String,String> hpciRequestParamMap = new Map<String,String>();
-       
-        // Get request parameters from form (all the attributes that the
-        // user inputs
+              
         hpciRequestParamMap.put('pxyCreditCard.cardType', cardType);
         hpciRequestParamMap.put('pxyCreditCard.creditCardNumber', ccToken);
         hpciRequestParamMap.put('pxyCreditCard.expirationMonth', expiryMonth);
@@ -36,24 +76,27 @@ public class PaymentTerminalController {
         hpciRequestParamMap.put('pxyCustomerInfo.billingLocation.zipCode', zip);
         hpciRequestParamMap.put('pxyCustomerInfo.billingLocation.country', country);
         
-        if(action3DSec =='verifyenroll'){
-                   hpciRequestParamMap.put('pxyThreeDSecAuth.actionName', action3DSec);
-        }
-                          	
+        //3D secure params
+        hpciRequestParamMap.put('pxyThreeDSecAuth.actionName', action3DSec);                        
+		hpciRequestParamMap.put('pxyThreeDSecAuth.authTxnId',authTxnId);
+	    hpciRequestParamMap.put('pxyThreeDSecAuth.authSignComboList[0]', 'YY');
+		hpciRequestParamMap.put('pxyThreeDSecAuth.authSignComboList[1]', 'AY');
+		hpciRequestParamMap.put('pxyThreeDSecAuth.authSignComboList[2]', 'UY');
+     	
         String hostedPciMsg = HostedPciServiceUtil.httpCalloutHostedPciAuthOnly(hpciRequestParamMap);
         Map<String,String> hostedPciMsgMap = HostedPciServiceUtil.parseQueryString(hostedPciMsg);
         
-        if(hostedPciMsgMap.get('pxyResponse.threeDSEnrolled') != 'Y'){                 
-            SaveTransaction(ccToken, cardType, firstName, lastName, expiryMonth, expiryYear,
-                            address1, address2, paymentAmount, city, country, hpciCurrency, 
-                            hostedPciMsgMap.get('pxyResponse.processorRefId'), merchantRefId, paymentComments, paymentProfile,
-                            state, zip, hostedPciMsg);
-            } 
+        SaveTransaction(ccToken, cardType, firstName, lastName, expiryMonth, expiryYear,
+                        address1, address2, paymentAmount, city, country, hpciCurrency, 
+                        hostedPciMsgMap.get('pxyResponse.processorRefId'), merchantRefId, paymentComments, paymentProfile,
+                        state, zip, hostedPciMsg);
                
         hostedPciMsgMap.put('fullMsg',hostedPciMsg);
+       
         return hostedPciMsgMap;
+        
     }
-                    
+    
     public static void SaveTransaction(String ccNum, String cardType, String firstName, String lastName,
                                	String expiryMonth, String expiryYear, String address1, String address2, 
                                 String amount, String city, String country, String hpciCurrency, 
@@ -106,40 +149,9 @@ public class PaymentTerminalController {
         }               
     } 
     
-    public PageReference populateData(){
-        fullParentQStr = ApexPages.currentPage().getUrl();
-        fullParentHost = ApexPages.currentPage().getHeaders().get('Host');
-
-        SiteId = HostedPCISettings__c.getInstance().siteId__c;
-        LocationName = HostedPCISettings__c.getInstance().locationName__c;
-        if((String.isEmpty(SiteId))&&(String.isEmpty(LocationName))){
-            try{
-                HostedPCISettings__c hostedPciConf = HostedPCISettings__c.getOrgDefaults();
-
-                hostedPciConf.userName__c = 'sampqa1stgAdmAPI';
-                hostedPciConf.apiType__c = 'pxyhpci';
-                hostedPciConf.userPassKey__c = '.OQdIHVtVJSg-W-Zr40QQGY1xyhvGjUH';
-                hostedPciConf.endPointVoid__c = '/iSynSApp/paymentVoid.action';
-                hostedPciConf.endPointCapture__c = '/iSynSApp/paymentCapture.action';
-                hostedPciConf.endPointCredit__c = '/iSynSApp/paymentCredit.action';
-                hostedPciConf.locationName__c = 'javasample1';
-                hostedPciConf.apiVersion__c = '1.0.1';
-                hostedPciConf.endPointAuth__c = '/iSynSApp/paymentAuth.action';
-                hostedPciConf.endPointBaseUrl__c = 'https://api-sampqa1stg.c1.hostedpci.com';
-                hostedPciConf.endPointSale__c = '/iSynSApp/paymentSale.action';
-                hostedPciConf.endPoint_manageCCMapPhoneAPI__c = '/iSynSApp/manageCCMapPhoneAPI.action';
-                hostedPciConf.siteId__c = '528160';
-
-                insert hostedPciConf;
-
-                SiteId = HostedPCISettings__c.getInstance().siteId__c;
-                LocationName = HostedPCISettings__c.getInstance().locationName__c;
-            }catch (DmlException e) {
-            	System.debug(e.getMessage());
-            	ApexPages.addMessages(e);
-        	}
-        }
-        return null;
-    }
-
+    public PageReference back(){
+        PageReference pageRef = Page.PaymentTerminal;
+        return pageRef;
+    } 
+    
 }

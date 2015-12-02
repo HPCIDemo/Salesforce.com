@@ -79,6 +79,7 @@ public class HostedPciServiceUtil{
         HttpRequest httpReq = new HttpRequest();
         httpReq.setMethod('POST');      
         httpReq.setBody(encodeMsg(hpciRequestParamMap));
+        httpReq.setTimeout(60000);
         httpReq.setEndpoint(hostedPciSet.endPointBaseUrl__c + urlEndPoint);
         HttpResponse httpRes = new HttpResponse();
         httpRes = httpConn.send(httpReq);
