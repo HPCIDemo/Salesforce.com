@@ -92,6 +92,8 @@ In order to use public web site ,"Sites" feature have to be enabled in your Sale
 - In the "Administration" panel on the left go to "Develop" > "Sites".
 - On the right click "New".
 - Enter site details, for the "Active Site Home Page" select "HostedPCIDemo" page.
+- Go to "Sites". Click on the "Site Label".
+- Click on "Public Access Settings" . Scroll down, under "Enabled Visualforce Page Access" section click on "Edit". Select "HostedPCIMsg" from the left list, click "Add" > "Save".
 
 #Contacts
 [HostedPCI Inc.]( http://www.hostedpci.com/) sales@hostedpci.com 1-866-850-3608.
