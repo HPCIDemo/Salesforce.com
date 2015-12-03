@@ -79,8 +79,9 @@ public class PaymentTerminalMsgController_Test {
 		test.StartTest();
         	controller.saveData();
         	String backPage = controller.back().getUrl();
-        	// Verify that the PaymentTerminal page displays
-			System.assertEquals('/apex/paymentterminal', backPage);        	        
+        	// Verify that the PaymentTerminal page displays    			  
+          String paymentUrl = Page.PaymentTerminal.getUrl();
+			    System.assertEquals(paymentUrl, backPage);
         //stoptest
 		test.StopTest();
     }
