@@ -10,12 +10,10 @@
         <members>HostedPciServiceUtil</members>
         <members>PaymentTerminalController</members>
         <members>PaymentTerminalController_Test</members>
-        <members>PaymentTerminalMsgController</members>
-        <members>PaymentTerminalMsgController_Test</members>
-        <members>mock_HostedPciServicePhoneAPIUtil</members>
-        <members>mock_HostedPciServiceUtil</members>
         <members>ThreeDSecPinFrameController</members>
         <members>ThreeDSecPinFrameController_Test</members>
+        <members>mock_HostedPciServicePhoneAPIUtil</members>
+        <members>mock_HostedPciServiceUtil</members>
         <name>ApexClass</name>
     </types>
     <types>
@@ -24,7 +22,6 @@
         <members>HostedPCIMsg</members>
         <members>HostedPCISettings</members>
         <members>PaymentTerminal</members>
-        <members>PaymentTerminalMsg</members>
         <members>ThreeDSecPinFrame</members>
         <name>ApexPage</name>
     </types>

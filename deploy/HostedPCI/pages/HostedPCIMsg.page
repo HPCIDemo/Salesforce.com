@@ -1,12 +1,19 @@
-<apex:page applyhtmltag="false" showheader="false"  Controller="HostedPCIMsgController" action="{!saveData}">
+<apex:page applyhtmltag="false" showheader="false"  Controller="HostedPCIMsgController">
 <head>
     <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css"/>
     <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
     <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
     <script src="//code.jquery.com/jquery-1.10.2.js"></script>      
     <script>  
-        $(document).ready(function(){                           
-            $( "#button" ).click(function() {  
+        $(document).ready(function(){ 
+        	var firstLoad = true;           
+            //Initialize config data 
+            if(firstLoad){                
+                saveData();
+                firstLoad = false;
+            }
+        	
+            $( '#fullMessageToggle' ).click(function() {  
                   $(this).text($(this).text()=="Show full message"?"Hide message":"Show full message");
                   $('.toggler').toggle();              
             });            
@@ -38,8 +45,8 @@
    </head> 
    <body > 
    <apex:messages id="error" styleClass="errorMsg" layout="table" style="margin-top:1em;"/>  
-    <apex:pageBlock title="Transaction Summary" >      
-        <apex:panelGrid columns="2">
+    <apex:pageBlock title="Transaction Summary">      
+       <apex:panelGrid columns="2">
             <!-- Gets responseStatus from the response map that the iframe sent back -->
             <apex:outputLabel value="Status:"/>
             <apex:outputText value="{!status}"/>
@@ -70,8 +77,19 @@
             <!-- Gets comment from the user input on previous page -->
             <apex:outputLabel value="Comments:"/>
             <apex:outputText value="{!comment}"/>
-        </apex:panelGrid>              
-       <button id="button" >Show full message</button>
+        </apex:panelGrid>
+        <div class="row">       	
+        	<div class="col-md-6">
+            	<button id="fullMessageToggle" type="button">Show full message</button>
+            </div>
+            <div class="col-md-6">
+            	<apex:form >
+                	<div style="float:right;">            
+                    	<apex:commandButton action="{!back}" value="Back"/>
+                    </div>   
+                </apex:form> 
+           	</div>                   
+       </div><!-- row --> 
        <div class="toggler">
           <div id="effect" class="ui-widget-content ui-corner-all">
           <!-- Gets full plain message received from Hosted PCI  -->
@@ -82,5 +100,8 @@
           </div>
         </div>        
     </apex:pageBlock> 
+    <apex:form id="config">  	
+	    <apex:actionFunction action="{!saveData}" name="saveData" rerender="config"/>
+    </apex:form>
    </body>     
 </apex:page>

@@ -1,58 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
-    <description>Permission Set generated for access to custom objects for the app HostedPCI</description>
-    <label>HostedPCI Developer</label>
     <applicationVisibilities>
         <application>HostedPCI</application>
         <visible>true</visible>
     </applicationVisibilities>
-    <tabSettings>
-      <tab>callCenter</tab>
-      <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-      <tab>HostedPCI_Settings</tab>
-      <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-      <tab>Payment__c</tab>
-      <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-      <tab>paymentTerminal</tab>
-      <visibility>Visible</visibility>
-    </tabSettings>
-    <tabSettings>
-      <tab>Token__c</tab>
-      <visibility>Visible</visibility>
-    </tabSettings>
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>true</allowDelete>
-        <allowEdit>true</allowEdit>
-        <allowRead>true</allowRead>
-        <viewAllRecords>true</viewAllRecords>
-        <modifyAllRecords>true</modifyAllRecords>
-        <object>Payment__c</object>
-    </objectPermissions>
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>true</allowDelete>
-        <allowEdit>true</allowEdit>
-        <allowRead>true</allowRead>
-        <viewAllRecords>true</viewAllRecords>
-        <modifyAllRecords>true</modifyAllRecords>
-        <object>Token__c</object>
-    </objectPermissions>
-    <objectPermissions>
-        <allowCreate>true</allowCreate>
-        <allowDelete>true</allowDelete>
-        <allowEdit>true</allowEdit>
-        <allowRead>true</allowRead>
-        <viewAllRecords>true</viewAllRecords>
-        <modifyAllRecords>true</modifyAllRecords>
-        <object>HostedPCISettings__c</object>
-    </objectPermissions>
+    <classAccesses>
+        <apexClass>CallCenterController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>CallCenterController_Test</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>HostedPCIMsgController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>HostedPCIMsgController_Test</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>HostedPCISettingsController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>HostedPCISettingsController_Test</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>HostedPciServiceUtil</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>PaymentTerminalController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>PaymentTerminalController_Test</apexClass>
+        <enabled>false</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>ThreeDSecPinFrameController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>ThreeDSecPinFrameController_Test</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>mock_HostedPciServicePhoneAPIUtil</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>mock_HostedPciServiceUtil</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <description>Permission Set generated for access to custom objects for the app HostedPCI</description>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Payment__c.HostedPci_Response__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
         <field>Payment__c.Token__c</field>
@@ -70,76 +79,35 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Payment__c.HostedPci_Response__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
-        <editable>true</editable>
         <field>Payment__c.merchantRefId__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <classAccesses>
-        <apexClass>CallCenterController</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>CallCenterController_Test</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>HostedPCIMsgController</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>HostedPCIMsgController_Test</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>HostedPCISettingsController</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>HostedPCISettingsController_Test</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>mock_HostedPciServiceUtil</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-        <apexClass>mock_HostedPciServicePhoneAPIUtil</apexClass>
-        <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>PaymentTerminalController</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>PaymentTerminalMsgController</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>PaymentTerminalMsgController_Test</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>HostedPciServiceUtil</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>ThreeDSecPinFrameController</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
-    <classAccesses>
-      <apexClass>ThreeDSecPinFrameController_Test</apexClass>
-      <enabled>true</enabled>
-    </classAccesses>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Token__c.cardType__c</field>
+        <readable>false</readable>
+    </fieldPermissions>
+    <label>HostedPCI Developer</label>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>Payment__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>true</modifyAllRecords>
+        <object>Token__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
     <pageAccesses>
         <apexPage>CallCenter</apexPage>
-        <enabled>true</enabled>
-    </pageAccesses>
-    <pageAccesses>
-        <apexPage>HostedPCISettings</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
@@ -151,15 +119,35 @@
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
-        <apexPage>PaymentTerminal</apexPage>
+        <apexPage>HostedPCISettings</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
-        <apexPage>PaymentTerminalMsg</apexPage>
+        <apexPage>PaymentTerminal</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
         <apexPage>ThreeDSecPinFrame</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
+    <tabSettings>
+        <tab>HostedPCI_Settings</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Payment__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>Token__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>callCenter</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>paymentTerminal</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>

@@ -1,4 +1,4 @@
-public class HostedPCISettingsController {
+public with sharing class HostedPCISettingsController {
     public String userName;
     public String userPassKey;
     public String endPointBaseUrl;
@@ -30,9 +30,9 @@ public class HostedPCISettingsController {
                 update hostedPciConf;
                 userName = newValue;
             }catch (DmlException e) {
-            	System.debug(e.getMessage());
-            	ApexPages.addMessages(e);
-        	} 
+                System.debug(e.getMessage());
+                ApexPages.addMessages(e);
+            } 
         }
             
     }
@@ -48,9 +48,9 @@ public class HostedPCISettingsController {
                 update hostedPciConf;
                 userPassKey = newValue;
             }catch (DmlException e) {
-            	System.debug(e.getMessage());
-            	ApexPages.addMessages(e);
-        	} 
+                System.debug(e.getMessage());
+                ApexPages.addMessages(e);
+            } 
         }        
     }  
     
@@ -65,9 +65,9 @@ public class HostedPCISettingsController {
                 update hostedPciConf;
                 endPointBaseUrl = newValue;
             }catch (DmlException e) {
-            	System.debug(e.getMessage());
-            	ApexPages.addMessages(e);
-        	} 
+                System.debug(e.getMessage());
+                ApexPages.addMessages(e);
+            } 
         }
     }   
     
@@ -82,9 +82,9 @@ public class HostedPCISettingsController {
                 update hostedPciConf;
                 siteId = newValue;
             }catch (DmlException e) {
-            	System.debug(e.getMessage());
-            	ApexPages.addMessages(e);
-        	} 
+                System.debug(e.getMessage());
+                ApexPages.addMessages(e);
+            } 
         } 
     }
     
@@ -99,9 +99,9 @@ public class HostedPCISettingsController {
                 update hostedPciConf;
                 locationName = newValue;
             }catch (DmlException e) {
-            	System.debug(e.getMessage());
-            	ApexPages.addMessages(e);
-        	} 
+                System.debug(e.getMessage());
+                ApexPages.addMessages(e);
+            } 
         }
     }   
     
@@ -129,7 +129,7 @@ public class HostedPCISettingsController {
     }
     public void closePopup() { 
         newValue='';
-		displayPopup = false;   
+        displayPopup = false;   
     }    
     public void showPopup() { 
         setModalTitle(buttonId);

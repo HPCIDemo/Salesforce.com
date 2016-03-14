@@ -132,6 +132,12 @@ public with sharing class CallCenterController {
             newPayment.HostedPci_Response__c = hostedPciMsg;
             newPayment.Token__c = newTokenID;
             
+            //Check if the user has create access
+            if (!Schema.sObjectType.Payment__c.isCreateable()){
+                  ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
+	                                                    'Insufficient access')); 
+	     		return;
+			}
             upsert newPayment;            
         } catch (DmlException e) {
             System.debug(e.getMessage());

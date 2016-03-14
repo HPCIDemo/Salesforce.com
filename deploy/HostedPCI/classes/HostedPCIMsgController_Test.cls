@@ -3,76 +3,71 @@ public class HostedPCIMsgController_Test {
     static PageReference pageRef;
     static HostedPCIMsgController controller;
     
-    private static void init(){
-        pageRef = PrepareParamMap();
+    private static void init(String apiTransactionService){        
+        pageRef = PrepareParamMap(apiTransactionService);                  
         Test.setCurrentPage(pageRef);
         //set our mock class for callouts
-		Test.setMock(HttpCalloutMock.class, new	mock_HostedPciServiceUtil());
+		Test.setMock(HttpCalloutMock.class, new	mock_HostedPciServiceUtil());   
         controller = new HostedPCIMsgController();
     }
     
-    public static testMethod void HostedPCIMsgController_AuthOnly_Test(){
-        init();                        
-        // Add parameters to page URL 
-        pageRef.getParameters().put('apiTransactionService','auth');      
-                
+    public static testMethod void HostedPCIMsgController_AuthOnly_Test(){                                      
+		init('auth');         
+        
         //start the test and separate DML flow
         test.StartTest();
-            controller.saveData();        
+            controller.saveData();
+			System.assertNotEquals('', controller.status);        
         //stoptest
         test.StopTest();
     }
     
     public static testMethod void HostedPCIMsgController_CaptureOnly_Test(){
-        init();                       
-        // Add parameters to page URL 
-        pageRef.getParameters().put('apiTransactionService','capture');      
-                
+        init('capture');      
+        
         //start the test and separate DML flow
         test.StartTest();
-            controller.saveData();        
+            controller.saveData();  
+        	System.assertNotEquals('', controller.status);
         //stoptest
         test.StopTest();
     }
     
     public static testMethod void HostedPCIMsgController_CreditOnly_Test(){
-        init();                                                
-        // Add parameters to page URL 
-        pageRef.getParameters().put('apiTransactionService','credit');      
+        init('credit');    
         
         //start the test and separate DML flow
         test.StartTest();
-            controller.saveData();        
+            controller.saveData(); 
+        	System.assertNotEquals('', controller.status);
         //stoptest
         test.StopTest();
     }
     
     public static testMethod void HostedPCIMsgController_SaleOnly_Test(){
-        init();                       
-        // Add parameters to page URL 
-        pageRef.getParameters().put('apiTransactionService','sale');      
-                
+        init('sale');  
+        
         //start the test and separate DML flow
         test.StartTest();
-            controller.saveData();        
+            controller.saveData();  
+        	System.assertNotEquals('', controller.status);
         //stoptest
         test.StopTest();
     }
     
     public static testMethod void HostedPCIMsgController_VoidOnly_Test(){
-        init();                                                
-        // Add parameters to page URL 
-        pageRef.getParameters().put('apiTransactionService','void');      
-                
+        init('void');                                                
+         
         //start the test and separate DML flow
         test.StartTest();
-            controller.saveData();        
+            controller.saveData();
+        	System.assertNotEquals('', controller.status);
         //stoptest
         test.StopTest();
     }
     
-    public static PageReference  PrepareParamMap(){
-        PageReference pageReference = Page.PaymentTerminalMsg;
+    public static PageReference  PrepareParamMap(String apiTransactionService){
+        PageReference pageReference = Page.HostedPCIMsg;
         
         // Add parameters to page URL         
         pageReference.getParameters().put('cardType','Visa');
@@ -95,6 +90,7 @@ public class HostedPCIMsgController_Test {
         pageReference.getParameters().put('state','On');
         pageReference.getParameters().put('zip','l5k 7o2');
         pageReference.getParameters().put('country','Canada');
+        pageReference.getParameters().put('apiTransactionService',apiTransactionService);
         
         return pageReference;       
     }    

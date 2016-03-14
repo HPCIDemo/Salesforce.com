@@ -26,7 +26,7 @@ global class mock_HostedPciServiceUtil implements HttpCalloutMock{
             +'responseStatus%3Dapproved%26pxyResponse.threeDSOrderId%3D%26pxyResponse.responseAVS2%3D%26pxyResponse.'
             +'responseAVS1%3DY%26pxyResponse.responseAVS4%3D%26pxyResponse.responseAVS3%3D%26pxyResponse.'
             +'threeDSPARequest%3D';
-     	res.setBody(response);
+     	res.setBody(response);        
 	 	return res;   
     }
 }

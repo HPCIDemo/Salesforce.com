@@ -29,11 +29,16 @@ public class HostedPCISettingsController_Test {
      	init();
         //Start the test
         test.StartTest();        	        	
-        	controller.getUserName();
-        	controller.getUserPassKey();
-        	controller.getEndPointBaseUrl();
-        	controller.getSiteId();
-        	controller.getLocationName();        	
+        	String userName = controller.getUserName();
+        	String userPassKey = controller.getUserPassKey();
+        	String endpointBaseUrl = controller.getEndPointBaseUrl();
+        	String siteId = controller.getSiteId();
+        	String locationName = controller.getLocationName();  
+	        System.assertNotEquals('' , userName);
+        	System.assertNotEquals('' , userPassKey);
+        	System.assertNotEquals('' , endpointBaseUrl);
+        	System.assertNotEquals('' , siteId);
+        	System.assertNotEquals('' , locationName);
         //Stop the test
 		test.StopTest();
     }

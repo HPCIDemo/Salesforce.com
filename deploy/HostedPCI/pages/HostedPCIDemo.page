@@ -1,4 +1,4 @@
-<apex:page doctype="html-5.0" applyhtmltag="false" showheader="false" controller="PaymentTerminalController" standardstylesheets="false" cache="false" action="{!populateData}">
+<apex:page doctype="html-5.0" applyhtmltag="false" showheader="false" controller="PaymentTerminalController" standardstylesheets="false" cache="false">
 
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
@@ -10,27 +10,31 @@
     <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
     <script type="text/javascript">
         $(document).ready(function() {
+            var firstLoad = true; 
+            
+            //Initialize configuration data 
+            if(firstLoad){
+               var iframeLoadId = setInterval(function(){ 
+               populateData();
+               hpciCCFrameFullUrl = document.getElementById("{!$Component.config.iFrameSrc}").value;               
+               if(hpciCCFrameFullUrl.length > 0){                           	                            
+               		document.getElementById("ccframe").src=hpciCCFrameFullUrl;
+                    jQuery('#ccInfo').removeClass("ccInfo");   
+                    firstLoad = false;
+                    clearInterval(iframeLoadId);
+                 	}
+                }, 300);                                                                         
+             }
             $("#paymentResetButton").click(function () {
                 document.getElementById("CCAcceptForm").reset();
                 document.getElementById("ccframe").src = document.getElementById("ccframe").src;
-            });
-            var siteId = document.getElementById("{!$Component.config.siteId}").value;
-        	var locationName = document.getElementById("{!$Component.config.locationName}").value;
-      		var fullParentQStr = document.getElementById("{!$Component.config.fullParentQStr}").value;
-        	var fullParentHost = document.getElementById("{!$Component.config.fullParentHost}").value;
-
-            hpciCCFrameFullUrl = "https://cc.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&"
-        	+"locationName="+locationName
-        	+"&sid=" + siteId
-        	+"&fullParentHost=https://" + fullParentHost
-            +"&fullParentQStr=" + fullParentQStr;
-
+            });                        
             document.getElementById("ccframe").src=hpciCCFrameFullUrl;
         });
 
     </script>
     <script>
-        var hpciCCFrameHost = "https://cc.hostedpci.com";
+        var hpciCCFrameHost = "https://ccframe.hostedpci.com";
         var hpciCCFrameFullUrl ;
         var hpciCCFrameName = "ccframe"; // use the name of the frame containing the credit card
 
@@ -130,6 +134,9 @@
         float: none;
         margin: 0 auto;
     }
+   	.ccInfo{
+		display:none;
+	}
     </style>
 </head>
 
@@ -147,77 +154,6 @@
                 <fieldset>
                     <!-- Form Name -->
                     <legend>Web Checkout</legend>
-                    <fieldset >
-                        <legend>Credit Card Information</legend>
-                        <!-- Error message for invalid credit card -->
-                        <div id="errorMessage" style="display:none;color:red"><label>Invalid card number, try again</label><br/></div>
-                        <div class="row">
-                            <div class="col-xs-4 col-sm-3 col-md-4">
-                                <!-- Select credit card -->
-                                <label for="cardType">Card Type</label>
-                            </div>
-                        </div><!-- row -->
-                        <div class="row">
-                            <div class="col-xs-4 col-sm-3 col-md-4">
-                                <!-- id is used in HostedPCIMsg page -->
-                                <select id="cardType" name="cardType" class="selectpicker">
-                                    <option value="visa">Visa</option>
-                                    <option value="mastercard">MasterCard</option>
-                                    <option value="amex">American Express</option>
-                                </select>
-                            </div>
-                        </div><!-- row -->
-                        <!-- iframe -->
-                        <div class="row">
-                            <iframe id="ccframe" name="ccframe" onload="receiveHPCIMsg()" src="" style="border:none" height="61">
-                            If you can see this, your browser doesn't understand IFRAME.
-                            </iframe>
-                        </div><!-- row -->
-                        <!-- Input row (exp, month, cvv) -->
-                        <div class="row">
-                            <div class="col-xs-5 col-sm-4 col-md-4">
-                                    <label>Expiry MM/YY</label>
-                                    <!-- id is used in HostedPCIMsg page -->
-                            </div>
-                        </div><!-- row -->
-                        <!-- Input row (exp, month, cvv) -->
-                        <div class="row">
-                            <div class="col-xs-5 col-sm-3 col-md-3">
-                                <select id="expiryMonth" name="expiryMonth" class="selectpicker">
-                                    <option value="01">01 - January</option>
-                                    <option value="02">02 - February</option>
-                                    <option value="03">03 - March</option>
-                                    <option value="04">04 - April</option>
-                                    <option value="05">05 - May</option>
-                                    <option value="06">06 - June</option>
-                                    <option value="07">07 - July</option>
-                                    <option value="08">08 - August</option>
-                                    <option value="09">09 - September</option>
-                                    <option value="10">10 - October</option>
-                                    <option value="11">11 - November</option>
-                                    <option value="12">12 - December</option>
-                                </select>
-                            </div>
-                            <div class="col-xs-2 col-sm-2 col-md-2">
-                                <!-- id is used in HostedPCIMsg page -->
-                                <select id="expiryYear" name="expiryYear" class="selectpicker">
-                                    <option value="15">2015</option>
-                                    <option value="16">2016</option>
-                                    <option value="17">2017</option>
-                                    <option value="18">2018</option>
-                                    <option value="19">2019</option>
-                                    <option value="20">2020</option>
-                                    <option value="21">2021</option>
-                                    <option value="22">2022</option>
-                                    <option value="23">2023</option>
-                                    <option value="24">2024</option>
-                                    <option value="25">2025</option>
-                                    <option value="26">2026</option>
-                                </select>
-                            </div>
-                        </div><!-- row -->
-                    </fieldset>
-                    <br />
                     <fieldset>
                         <legend>Personal Information</legend>
                         <div class="row">
@@ -325,18 +261,7 @@
                                     <option value="DEF_MONERIS">DEF_MONERIS - Currency: USD</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-xs-6 col-sm-3 col-md-4">
-                                <!-- Submit button -->
-                                <button type="submit" value="Submit" class="btn btn-primary"
-                                    onClick='return sendHPCIMsg();'>Process Payment</button>
-                            </div>
-                            <div class="col-xs-6 col-sm-3 col-md-4">
-                                <!-- Reset button -->
-                                <button id="paymentResetButton" type="button" value="Reset Payment" class="btn btn-primary">Reset Payment</button><br />
-                            </div>
-                        </div>
+                        </div>                        
                         <br />
                         <div class="row">
                             <div class="col-xs-4 col-sm-3 col-md-4">
@@ -361,16 +286,97 @@
                             </div>
                         </div>
                     </fieldset>
+					<fieldset id = "ccInfo" class = "ccInfo">
+                        <legend>Credit Card Information</legend>
+                        <!-- Error message for invalid credit card -->
+                        <div id="errorMessage" style="display:none;color:red"><label>Invalid card number, try again</label><br/></div>
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <!-- Select credit card -->
+                                <label for="cardType">Card Type</label>
+                            </div>
+                        </div><!-- row -->
+                        <div class="row">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
+                                <!-- id is used in HostedPCIMsg page -->
+                                <select id="cardType" name="cardType" class="selectpicker">
+                                    <option value="visa">Visa</option>
+                                    <option value="mastercard">MasterCard</option>
+                                    <option value="amex">American Express</option>
+                                </select>
+                            </div>
+                        </div><!-- row -->
+                        <!-- iframe -->
+                        <div class="row">
+                            <iframe id="ccframe" name="ccframe" onload="receiveHPCIMsg()" src="" style="border:none" height="61">
+                            If you can see this, your browser doesn't understand IFRAME.
+                            </iframe>                            
+                        </div><!-- row -->
+                        <!-- Input row (exp, month, cvv) -->
+                        <div class="row">
+                            <div class="col-xs-5 col-sm-4 col-md-4">
+                                    <label>Expiry MM/YY</label>
+                                    <!-- id is used in HostedPCIMsg page -->
+                            </div>
+                        </div><!-- row -->
+                        <!-- Input row (exp, month, cvv) -->
+                        <div class="row">
+                            <div class="col-xs-5 col-sm-3 col-md-3">
+                                <select id="expiryMonth" name="expiryMonth" class="selectpicker">
+                                    <option value="01">01 - January</option>
+                                    <option value="02">02 - February</option>
+                                    <option value="03">03 - March</option>
+                                    <option value="04">04 - April</option>
+                                    <option value="05">05 - May</option>
+                                    <option value="06">06 - June</option>
+                                    <option value="07">07 - July</option>
+                                    <option value="08">08 - August</option>
+                                    <option value="09">09 - September</option>
+                                    <option value="10">10 - October</option>
+                                    <option value="11">11 - November</option>
+                                    <option value="12">12 - December</option>
+                                </select>
+                            </div>
+                            <div class="col-xs-2 col-sm-2 col-md-2">
+                                <!-- id is used in HostedPCIMsg page -->
+                                <select id="expiryYear" name="expiryYear" class="selectpicker">
+                                    <option value="15">2015</option>
+                                    <option value="16">2016</option>
+                                    <option value="17">2017</option>
+                                    <option value="18">2018</option>
+                                    <option value="19">2019</option>
+                                    <option value="20">2020</option>
+                                    <option value="21">2021</option>
+                                    <option value="22">2022</option>
+                                    <option value="23">2023</option>
+                                    <option value="24">2024</option>
+                                    <option value="25">2025</option>
+                                    <option value="26">2026</option>
+                                </select>
+                            </div>
+                            <br/>
+                            <br/>
+                            <div class="row">
+                            <div class="col-xs-6 col-sm-3 col-md-4">
+                                <!-- Submit button -->
+                                <button type="submit" value="Submit" class="btn btn-primary"
+                                    onClick='return sendHPCIMsg();'>Process Payment</button>
+                            </div>
+                            <div class="col-xs-6 col-sm-3 col-md-4">
+                                <!-- Reset button -->
+                                <button id="paymentResetButton" type="button" value="Reset Payment" class="btn btn-primary">Reset Payment</button><br />
+                            </div>
+                        </div>
+                        </div><!-- row -->
+                    </fieldset>
                 </fieldset><!-- Outer fieldset -->
             </form>
         </div><!-- col-md-7 col-centered -->
     </div><!-- row -->
 </div><!-- container -->
- <apex:form id="config">
-  	<apex:inputHidden id="siteId" value="{!siteId}"/>
-  	<apex:inputHidden id="locationName" value="{!locationName}"/>
-    <apex:inputHidden id="fullParentQStr" value="{!fullParentQStr}"/>
-    <apex:inputHidden id="fullParentHost" value="{!fullParentHost}"/>
+  <apex:form id="config">
+  	<apex:inputHidden id="iFrameSrc" value="{!iFrameSrc}"/>
+    <apex:actionFunction action="{!populateData}" name="populateData" rerender="config"/>
   </apex:form>
 </body>
 </apex:page>

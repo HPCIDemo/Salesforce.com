@@ -64,7 +64,7 @@
         	var siteId;
         	var fullParentQStr;
         	var fullParentHost;
-			var hpciCCFrameHost = "https://cc.hostedpci.com";
+			var hpciCCFrameHost = "https://ccframe.hostedpci.com";
         	var authTxnId;
         
             jQuery(document).ready(function() { 
@@ -73,7 +73,7 @@
                 fullParentHost = document.getElementById("{!$Component.config.fullParentHost}").value;
                 authTxnId = document.getElementById("{!$Component.config.authTxnId}").value;
                 
-                hpciCC3DSecPinFrameFullUrl = "https://cc.hostedpci.com/iSynSApp/appUserVerify3DResp!verificationForm.action?"
+                hpciCC3DSecPinFrameFullUrl = "https://ccframe.hostedpci.com/iSynSApp/appUserVerify3DResp!verificationForm.action?"
                 +"sid=" + siteId
                 +"&authTxnId=" + authTxnId
                 +"&fullParentHost=https://" + fullParentHost

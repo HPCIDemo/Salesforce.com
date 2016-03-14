@@ -1,8 +1,8 @@
-public class ThreeDSecPinFrameController {
+public with sharing class ThreeDSecPinFrameController {
     public string SiteId{get ; set;}
     public string fullParentQStr{get; set;}
     public string fullParentHost{get; set;}
-	public string authTxnId{get; set;}
+    public string authTxnId{get; set;}
     public string ccNum{get; set;}
     public string ccCVV{get; set;}
     public string cardType{get; set;}
@@ -50,7 +50,7 @@ public class ThreeDSecPinFrameController {
            String expiryMonth, String expiryYear, String firstName, String lastName, String address1,
            String address2, String city, String state, String zip, String country, String hpciCurrency,
            String paymentAmount, String paymentComments, String paymentProfile, String action3DSec,
-           String authTxnId){           	
+           String authTxnId){               
                         
         // Setup request param map        
         Map<String,String> hpciRequestParamMap = new Map<String,String>();
@@ -78,11 +78,11 @@ public class ThreeDSecPinFrameController {
         
         //3D secure params
         hpciRequestParamMap.put('pxyThreeDSecAuth.actionName', action3DSec);                        
-		hpciRequestParamMap.put('pxyThreeDSecAuth.authTxnId',authTxnId);
-	    hpciRequestParamMap.put('pxyThreeDSecAuth.authSignComboList[0]', 'YY');
-		hpciRequestParamMap.put('pxyThreeDSecAuth.authSignComboList[1]', 'AY');
-		hpciRequestParamMap.put('pxyThreeDSecAuth.authSignComboList[2]', 'UY');
-     	
+        hpciRequestParamMap.put('pxyThreeDSecAuth.authTxnId',authTxnId);
+        hpciRequestParamMap.put('pxyThreeDSecAuth.authSignComboList[0]', 'YY');
+        hpciRequestParamMap.put('pxyThreeDSecAuth.authSignComboList[1]', 'AY');
+        hpciRequestParamMap.put('pxyThreeDSecAuth.authSignComboList[2]', 'UY');
+        
         String hostedPciMsg = HostedPciServiceUtil.httpCalloutHostedPciAuthOnly(hpciRequestParamMap);
         Map<String,String> hostedPciMsgMap = HostedPciServiceUtil.parseQueryString(hostedPciMsg);
         
@@ -98,7 +98,7 @@ public class ThreeDSecPinFrameController {
     }
     
     public static void SaveTransaction(String ccNum, String cardType, String firstName, String lastName,
-                               	String expiryMonth, String expiryYear, String address1, String address2, 
+                                String expiryMonth, String expiryYear, String address1, String address2, 
                                 String amount, String city, String country, String hpciCurrency, 
                                 String processorRefId, String merchantRefId, String comment, String paymentProfile,
                                 String state, String zip, String hostedPciMsg){
@@ -142,6 +142,12 @@ public class ThreeDSecPinFrameController {
             newPayment.HostedPci_Response__c = hostedPciMsg;
             newPayment.Token__c = newTokenID;
             
+            //Check if the user has create access
+            if (!Schema.sObjectType.Payment__c.isCreateable()){
+                  ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
+	                                                    'Insufficient access')); 
+	     		return;
+			}
             upsert newPayment;            
         } catch (DmlException e) {
             System.debug(e.getMessage());
