@@ -3,5 +3,5 @@
     <description>HostedPci payment</description>
     <disableProtocolSecurity>true</disableProtocolSecurity>
     <isActive>true</isActive>
-    <url>https://apisampqa1stg.c1.hostedpci.com</url>
+    <url>https://apiservice.hostedpci.com</url>
 </RemoteSiteSetting>

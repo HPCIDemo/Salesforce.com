@@ -119,7 +119,7 @@ public with sharing class PaymentTerminalController {
 
         SiteId = HostedPCISettings__c.getInstance().siteId__c;
         LocationName = HostedPCISettings__c.getInstance().locationName__c;
-        
+
         if((String.isEmpty(SiteId))&&(String.isEmpty(LocationName))){
             try{
                 HostedPCISettings__c hostedPciConf = HostedPCISettings__c.getOrgDefaults();
@@ -133,7 +133,7 @@ public with sharing class PaymentTerminalController {
                 hostedPciConf.locationName__c = 'javasample1';
                 hostedPciConf.apiVersion__c = '1.0.1';
                 hostedPciConf.endPointAuth__c = '/iSynSApp/paymentAuth.action';
-                hostedPciConf.endPointBaseUrl__c = 'https://apisampqa1stg.c1.hostedpci.com';
+                hostedPciConf.endPointBaseUrl__c = 'https://apiservice.hostedpci.com';
                 hostedPciConf.endPointSale__c = '/iSynSApp/paymentSale.action';
                 hostedPciConf.endPoint_manageCCMapPhoneAPI__c = '/iSynSApp/manageCCMapPhoneAPI.action';
                 hostedPciConf.siteId__c = '528160';

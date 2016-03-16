@@ -58,7 +58,7 @@
         <name>PermissionSet</name>
     </types>
     <types>
-        <members>HostedPci</members>
+        <members>HostedPCI</members>
         <name>RemoteSiteSetting</name>
     </types>
     <types>
