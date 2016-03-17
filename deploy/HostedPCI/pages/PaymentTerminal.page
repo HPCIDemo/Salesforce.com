@@ -1,30 +1,30 @@
 <apex:page sidebar="false" controller="PaymentTerminalController">
-  <head>  
-    <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-2.1.1.js')}"/>  
+  <head>
+    <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-2.1.1.js')}"/>
     <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery.ba-postmessage.2.0.0.min.js')}"/>
-    <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'hpci-cciframe-1.0.js')}"/>
+    <script src="https://ccframe.hostedpci.com/WBSStatic/site60/proxy/js/hpci-cciframe-1.0.js"></script>
     <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
     <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
-    
+
     <style type="text/css">
         fieldset {
             font-family: sans-serif;
             border: 5px solid #1F497D;
             background: #CDE8F0;
             border-radius: 5px;
-            padding: 15px;        
+            padding: 15px;
             margin-top: 10px;
         }
         fieldset legend {
             background: #1F497D;
-            color: #fff;       
+            color: #fff;
             padding: 5px 10px;
             font-size: 32px;
             border-radius: 5px;
             box-shadow: 0 0 0 5px #ddd;
             margin-left: 10px;
             margin-right: 60px;
-            width: auto;        
+            width: auto;
         }
         .col-centered {
             float: none;
@@ -39,10 +39,10 @@
         }
         input[type="text"]:hover, select:hover{
             background-color: #ddddff;
-        } 
+        }
         .toggler{
           display:none;
-        }                
+        }
         #message{
             word-wrap: break-word;
             max-width: 823px;
@@ -51,7 +51,7 @@
         }
 		.trSummary, .ccInfo{
 			display:none;
-		}        
+		}
     </style>
     <script type="text/javascript">
        // Initiate processPayment function on processPaymentButton click
@@ -75,40 +75,40 @@
             var paymentComments = jQuery("#comment").val();
             var paymentProfile = jQuery("#paymentProfile option:selected").val();
  			var action3DSec = jQuery("#action3DSec").val();
-            
-            Visualforce.remoting.Manager.invokeAction(  
-                '{!$RemoteAction.PaymentTerminalController.processPayment}', 
+
+            Visualforce.remoting.Manager.invokeAction(
+                '{!$RemoteAction.PaymentTerminalController.processPayment}',
                     ccToken, cvvToken, cardType, expiryMonth, expiryYear, firstName,
                     lastName, address1, address2, city, state, zip, country,
                     currency, paymentAmount, paymentComments, paymentProfile, action3DSec,
-                    function(resultMap,event){ 
+                    function(resultMap,event){
                         if(resultMap['pxyResponse.threeDSEnrolled'] =='Y'){
-                            jQuery('#authTxnId').val(resultMap['pxyResponse.threeDSTransactionId']);                            
-                        	jQuery('#CCAcceptForm').submit();                            
+                            jQuery('#authTxnId').val(resultMap['pxyResponse.threeDSTransactionId']);
+                        	jQuery('#CCAcceptForm').submit();
                         }
                     	if(resultMap['pxyResponse.responseStatus'] == "approved") {
                                jQuery('#processPaymentButton').attr("disabled", true);
                                jQuery('#paymentResetButton').attr("disabled", false);
                            }
                         if(resultMap['pxyResponse.threeDSEnrolled'] !='Y'){
-                            jQuery('#trSummary').removeClass("trSummary");                         
-                        }                        
+                            jQuery('#trSummary').removeClass("trSummary");
+                        }
                         jQuery('#message').text(resultMap['fullMsg']);
                         jQuery('#paymentStatus').text(resultMap['pxyResponse.responseStatus']);
                         jQuery('#referenceId').text(resultMap['pxyResponse.processorRefId']);
                         jQuery('#paymentResponseCode').text(resultMap['pxyResponse.responseStatus.code']);
-                        // Replace "+" in the string with " 
+                        // Replace "+" in the string with "
                         jQuery('#paymentResponseMessage').text(
-                                (resultMap['pxyResponse.responseStatus.description']).replace(/\+/g, ' '));                                                               
+                                (resultMap['pxyResponse.responseStatus.description']).replace(/\+/g, ' '));
                     },
                     {escape:true}
                 );
         }// End of processPayment
-    
+
       	var hpciCCFrameHost = "https://ccframe.hostedpci.com";
         var hpciCCFrameFullUrl;
-        var hpciCCFrameName = "ccframe"; // use the name of the frame containing the credit card      	
-      
+        var hpciCCFrameName = "ccframe"; // use the name of the frame containing the credit card
+
         var hpciSiteErrorHandler = function(errorCode, errorMsg) {
             // Please the following alert to properly display the error message
             //alert("Error while processing credit card code:" + errorCode + "; msg:"   + errorMsg);
@@ -159,41 +159,41 @@
             // Adapt the following message / action to match your required experience
             alert("Received preliminary CVV details");
         }
-        
-        jQuery(document).ready(function() { 
-            var firstLoad = true;			
-            //Initialize configuration data 
+
+        jQuery(document).ready(function() {
+            var firstLoad = true;
+            //Initialize configuration data
             if(firstLoad){
-               var iframeLoadId = setInterval(function(){ 
+               var iframeLoadId = setInterval(function(){
                populateData();
-               hpciCCFrameFullUrl = document.getElementById("{!$Component.config.iFrameSrc}").value;               
-          
-               if(hpciCCFrameFullUrl.length > 0){                           	                            
+               hpciCCFrameFullUrl = document.getElementById("{!$Component.config.iFrameSrc}").value;
+
+               if(hpciCCFrameFullUrl.length > 0){
                		document.getElementById("ccframe").src=hpciCCFrameFullUrl;
-                    jQuery('#ccInfo').removeClass("ccInfo");   
+                    jQuery('#ccInfo').removeClass("ccInfo");
                     firstLoad = false;
                     clearInterval(iframeLoadId);
                  	}
-                }, 200);                                                                         
+                }, 200);
              }
-                        
+
             jQuery('#paymentResetButton').click(function () {
-               location.reload(true);               
-            }); 
-            
-            jQuery('#fullMessageToggle').click(function() {  
+               location.reload(true);
+            });
+
+            jQuery('#fullMessageToggle').click(function() {
                   jQuery(this).text(jQuery(this).text()=='Show full message'?'Hide message':'Show full message');
-                  jQuery('.toggler').toggle();              
-            }); 
-        });        
-    </script>    
+                  jQuery('.toggler').toggle();
+            });
+        });
+    </script>
   </head>
   <div class="col-md-7 col-centered">
-  <form id="CCAcceptForm" action ="ThreeDSecPinFrame" method="post">        
+  <form id="CCAcceptForm" action ="ThreeDSecPinFrame" method="post">
       <fieldset>
           <!-- Form Name -->
           <apex:messages id="error" styleClass="errorMsg" layout="table" style="margin-top:1em;"/>
-          <legend>Web Checkout</legend>          		
+          <legend>Web Checkout</legend>
               <fieldset>
                   <legend>Personal Information</legend>
                   <div class="row">
@@ -270,7 +270,7 @@
                       <div class="col-xs-4 col-sm-3 col-md-5">
                          <input id="comment" type="text" name="comment"></input>
                       </div>
-                   </div>                      
+                   </div>
                    <div class="row">
                           <div class="col-xs-4 col-sm-3 col-md-4">
                               <label>Currency:</label>
@@ -302,8 +302,8 @@
                                   <option value="DEF_3DSEC">DEF_3DSEC - Currency: any</option>
                                </select>
                           </div>
-                      </div>                      
-                      <br />                      
+                      </div>
+                      <br />
               </fieldset>
 			  <fieldset id = "ccInfo" class = "ccInfo">
                   <legend >Credit Card Information</legend>
@@ -357,7 +357,7 @@
                               <option value="12">12 - December</option>
                           </select>
                       </div>
-                      <div class="col-xs-4 col-sm-3 col-md-5">        
+                      <div class="col-xs-4 col-sm-3 col-md-5">
                       <!-- id is used in HostedPCIMsg page -->
                           <select id="expiryYear" name="expiryYear" class="selectpicker">
                               <option value="15">2015</option>
@@ -379,10 +379,10 @@
                       <div class="row">
                           <div class="col-xs-6 col-sm-3 col-md-4">
                               <!-- Submit button -->
-                              <button type="button" value="Submit"  class="btn btn-primary" 
+                              <button type="button" value="Submit"  class="btn btn-primary"
                                       style ="background-image: linear-gradient(to bottom, #428BCA 0px, #2D6CA2 100%);"
                                       id="processPaymentButton" onClick='sendHPCIMsg()'>Process Payment</button>
-                          </div>  
+                          </div>
                           <div class="col-xs-6 col-sm-3 col-md-4">
                               <!-- Reset button -->
                                 <button id="paymentResetButton" type="button"  value="Reset Payment" class="btn btn-primary"
@@ -397,33 +397,33 @@
                             <div class="col-md-8">
                                 <label>Payment Status: </label>
                                 <div id="paymentStatus" style="word-wrap: break-word;"></div><br />
-                            </div>  
+                            </div>
                         </div><!-- row -->
                         <div class="row">
                             <div class="col-md-8">
                                 <label>Reference ID: </label>
                                 <div id="referenceId" style="word-wrap: break-word;"></div><br />
-                            </div>  
+                            </div>
                         </div><!-- row -->
                         <div class="row">
                             <div class="col-md-8">
                                 <label>Response Code: </label>
                                 <div id="paymentResponseCode" style="word-wrap: break-word;"></div><br />
-                            </div>  
+                            </div>
                         </div><!-- row -->
                         <div class="row">
                             <div class="col-md-8">
                                 <label>Response Message: </label>
                                 <div id="paymentResponseMessage" style="word-wrap: break-word;"></div><br />
-                            </div>  
+                            </div>
                         </div><!-- row -->
                         <div class="row">
                             <div class="col-md-12">
                                 <button id="fullMessageToggle" type="button">Show full message</button>
                                 <div class="toggler">
                                     <div id="effect" >
-                                        <!-- Gets full plain message received from Hosted PCI  -->                                                                          
-                                        <div id="message"></div>                                        
+                                        <!-- Gets full plain message received from Hosted PCI  -->
+                                        <div id="message"></div>
                                     </div>
                                 </div>
                             </div>
@@ -440,9 +440,9 @@
                         </div>
               </fieldset>
        </fieldset>
-  </form>  
-  </div> 
-  <apex:form id="config">    
+  </form>
+  </div>
+  <apex:form id="config">
     <apex:inputHidden id="iFrameSrc" value="{!iFrameSrc}"/>
     <apex:actionFunction action="{!populateData}" name="populateData" reRender="config"/>
   </apex:form>

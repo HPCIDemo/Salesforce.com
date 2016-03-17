@@ -5,30 +5,30 @@
 
     <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-2.1.1.js')}"/>
     <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery.ba-postmessage.2.0.0.min.js')}"/>
-    <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'hpci-cciframe-1.0.js')}"/>
+    <script src="https://ccframe.hostedpci.com/WBSStatic/site60/proxy/js/hpci-cciframe-1.0.js"></script>
     <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
     <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
     <script type="text/javascript">
         $(document).ready(function() {
-            var firstLoad = true; 
-            
-            //Initialize configuration data 
+            var firstLoad = true;
+
+            //Initialize configuration data
             if(firstLoad){
-               var iframeLoadId = setInterval(function(){ 
+               var iframeLoadId = setInterval(function(){
                populateData();
-               hpciCCFrameFullUrl = document.getElementById("{!$Component.config.iFrameSrc}").value;               
-               if(hpciCCFrameFullUrl.length > 0){                           	                            
+               hpciCCFrameFullUrl = document.getElementById("{!$Component.config.iFrameSrc}").value;
+               if(hpciCCFrameFullUrl.length > 0){
                		document.getElementById("ccframe").src=hpciCCFrameFullUrl;
-                    jQuery('#ccInfo').removeClass("ccInfo");   
+                    jQuery('#ccInfo').removeClass("ccInfo");
                     firstLoad = false;
                     clearInterval(iframeLoadId);
                  	}
-                }, 300);                                                                         
+                }, 300);
              }
             $("#paymentResetButton").click(function () {
                 document.getElementById("CCAcceptForm").reset();
                 document.getElementById("ccframe").src = document.getElementById("ccframe").src;
-            });                        
+            });
             document.getElementById("ccframe").src=hpciCCFrameFullUrl;
         });
 
@@ -261,7 +261,7 @@
                                     <option value="DEF_MONERIS">DEF_MONERIS - Currency: USD</option>
                                 </select>
                             </div>
-                        </div>                        
+                        </div>
                         <br />
                         <div class="row">
                             <div class="col-xs-4 col-sm-3 col-md-4">
@@ -310,7 +310,7 @@
                         <div class="row">
                             <iframe id="ccframe" name="ccframe" onload="receiveHPCIMsg()" src="" style="border:none" height="61">
                             If you can see this, your browser doesn't understand IFRAME.
-                            </iframe>                            
+                            </iframe>
                         </div><!-- row -->
                         <!-- Input row (exp, month, cvv) -->
                         <div class="row">
