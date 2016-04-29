@@ -3,7 +3,7 @@ public with sharing class PaymentTerminalController {
     public string LocationName{get; set;}
     public string fullParentQStr{get; set;}
     public string fullParentHost{get; set;}
-    public string iFrameSrc{get; set;}
+    public string iFrameSrc{get; set;}    
 
     @RemoteAction
     public static Map<String,String> processPayment(String ccToken, String cvvToken, String cardType,
@@ -168,6 +168,31 @@ public with sharing class PaymentTerminalController {
             			+'&fullParentQStr=' + fullParentQStr;
         }
         return null;
+    }
+    
+    public PageReference processThreeDSecPayment() {
+       	PageReference nextPage = Page.ThreeDSecPinFrame;
+
+        nextPage.getParameters().put('authTxnId', ApexPages.currentPage().getParameters().get('authTxnId'));
+        nextPage.getParameters().put('ccNum', ApexPages.currentPage().getParameters().get('ccNum'));
+        nextPage.getParameters().put('ccCVV', ApexPages.currentPage().getParameters().get('ccCVV'));
+        nextPage.getParameters().put('cardType', ApexPages.currentPage().getParameters().get('cardType'));           
+        nextPage.getParameters().put('expiryMonth', ApexPages.currentPage().getParameters().get('expiryMonth'));           
+        nextPage.getParameters().put('expiryYear', ApexPages.currentPage().getParameters().get('expiryYear'));           
+        nextPage.getParameters().put('firstName', ApexPages.currentPage().getParameters().get('firstName'));           
+        nextPage.getParameters().put('lastName', ApexPages.currentPage().getParameters().get('lastName'));           
+        nextPage.getParameters().put('address1', ApexPages.currentPage().getParameters().get('address1'));           
+        nextPage.getParameters().put('address2', ApexPages.currentPage().getParameters().get('address2'));           
+        nextPage.getParameters().put('city', ApexPages.currentPage().getParameters().get('city'));           
+        nextPage.getParameters().put('state', ApexPages.currentPage().getParameters().get('state'));           
+		nextPage.getParameters().put('zip', ApexPages.currentPage().getParameters().get('zip'));           
+        nextPage.getParameters().put('country', ApexPages.currentPage().getParameters().get('country'));           
+        nextPage.getParameters().put('currency', ApexPages.currentPage().getParameters().get('currency'));           
+        nextPage.getParameters().put('amount', ApexPages.currentPage().getParameters().get('amount'));           
+        nextPage.getParameters().put('comment', ApexPages.currentPage().getParameters().get('comment'));           
+        nextPage.getParameters().put('paymentProfile', ApexPages.currentPage().getParameters().get('paymentProfile'));           
+        
+        return nextPage; 
     }
 
 }

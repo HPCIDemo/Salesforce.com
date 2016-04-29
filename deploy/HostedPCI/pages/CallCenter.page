@@ -45,7 +45,10 @@
         	max-width: 823px;
         	border-radius: 4px;
         	background-color: #F8F8F8;
-        }        
+        }
+        .trSummary{
+			display:none;
+		}
     </style>
     <script type="text/javascript">
         var currentSessionId = ""; 
@@ -167,7 +170,8 @@
 						$('#paymentResponseCode').text(resultMap['pxyResponse.responseStatus.code']);
 						// Replace "+" in the string with " "
 						$('#paymentResponseMessage').text(
-                            (resultMap['pxyResponse.responseStatus.description']).replace(/\+/g, ' '));                  
+                            (resultMap['pxyResponse.responseStatus.description']).replace(/\+/g, ' '));
+                        $('#trSummary').removeClass("trSummary");
                     },
                     {escape:true}
                 );
@@ -188,6 +192,7 @@
                 $('#sessionKeyResponse').text('');  
                 $('#createSessionButton').attr('disabled', false);
                 $('#paymentResetButton').attr('disabled', false);
+                $('#trSummary').addClass("trSummary");
             }); 
             
             $('#fullMessageToggle').click(function() {  
@@ -291,8 +296,7 @@
                       </div>
                       <div class="col-xs-4 col-sm-3 col-md-5">        
                       <!-- id is used in HostedPCIMsg page -->
-                          <select id="expiryYear" name="expiryYear" class="selectpicker">
-                              <option value="15">2015</option>
+                          <select id="expiryYear" name="expiryYear" class="selectpicker">                              
                               <option value="16">2016</option>
                               <option value="17">2017</option>
                               <option value="18">2018</option>
@@ -431,7 +435,7 @@
                       </div>
                       <br />  					  
               </fieldset>
-			  <fieldset>
+			  <fieldset id="trSummary" class="trSummary">
 						<legend>Transaction Summary</legend>
 						<div class="row">
 							<div class="col-md-8">

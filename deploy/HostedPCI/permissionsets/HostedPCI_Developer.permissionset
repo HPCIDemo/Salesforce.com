@@ -13,11 +13,11 @@
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>HostedPCIMsgController</apexClass>
+        <apexClass>HostedPCICheckoutController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
-        <apexClass>HostedPCIMsgController_Test</apexClass>
+        <apexClass>HostedPCICheckoutController_Test</apexClass>
         <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
@@ -38,7 +38,7 @@
     </classAccesses>
     <classAccesses>
         <apexClass>PaymentTerminalController_Test</apexClass>
-        <enabled>false</enabled>
+        <enabled>true</enabled>
     </classAccesses>
     <classAccesses>
         <apexClass>ThreeDSecPinFrameController</apexClass>
@@ -111,11 +111,11 @@
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
-        <apexPage>HostedPCIDemo</apexPage>
+        <apexPage>HostedPCICheckout</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
-        <apexPage>HostedPCIMsg</apexPage>
+        <apexPage>HostedPCICheckoutMsg</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>
@@ -124,6 +124,10 @@
     </pageAccesses>
     <pageAccesses>
         <apexPage>PaymentTerminal</apexPage>
+        <enabled>true</enabled>
+    </pageAccesses>
+    <pageAccesses>
+        <apexPage>ThreeDSecPin</apexPage>
         <enabled>true</enabled>
     </pageAccesses>
     <pageAccesses>

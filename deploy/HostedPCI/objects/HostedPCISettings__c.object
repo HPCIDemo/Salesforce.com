@@ -6,6 +6,7 @@
     <fields>
         <fullName>apiType__c</fullName>
         <defaultValue>&quot;pxyhpci&quot;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Api Type</label>
         <length>20</length>
@@ -17,6 +18,7 @@
     <fields>
         <fullName>apiVersion__c</fullName>
         <defaultValue>&quot;1.0.1&quot;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Api Version</label>
         <length>12</length>
@@ -28,6 +30,7 @@
     <fields>
         <fullName>endPointAuth__c</fullName>
         <defaultValue>&apos;/iSynSApp/paymentAuth.action&apos;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Assuming the full request param map is ready.Url string is made of the api url which is given by			HostedPCI + &quot;/iSynSApp/paymentAuth.action&quot;</inlineHelpText>
         <label>EndPoint  Auth</label>
@@ -40,6 +43,7 @@
     <fields>
         <fullName>endPointBaseUrl__c</fullName>
         <defaultValue>&apos;https://api-sampqa1stg.c1.hostedpci.com&apos;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Url string is made of the api url which is given by HostedPCI</inlineHelpText>
         <label>EndPoint BaseUrl</label>
@@ -50,6 +54,7 @@
     <fields>
         <fullName>endPointCapture__c</fullName>
         <defaultValue>&apos;/iSynSApp/paymentCapture.action&apos;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Assuming the full request param map is ready.Url string is made of the api url which is given by HostedPCI + &quot;/iSynSApp/paymentCapture.action&quot;</inlineHelpText>
         <label>EndPoint Capture</label>
@@ -62,6 +67,7 @@
     <fields>
         <fullName>endPointCredit__c</fullName>
         <defaultValue>&apos;/iSynSApp/paymentCredit.action&apos;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Assuming the full request param map is ready.Url string is made of the api url which is given by HostedPCI + &quot;/iSynSApp/paymentCredit.action&quot;</inlineHelpText>
         <label>EndPoint Credit</label>
@@ -74,6 +80,7 @@
     <fields>
         <fullName>endPointSale__c</fullName>
         <defaultValue>&apos;/iSynSApp/paymentSale.action&apos;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Assuming the full request param map is ready.Url string is made of the api url which is given by HostedPCI + &quot;/iSynSApp/paymentSale.action&quot;</inlineHelpText>
         <label>EndPoint Sale</label>
@@ -86,6 +93,7 @@
     <fields>
         <fullName>endPointVoid__c</fullName>
         <defaultValue>&apos;/iSynSApp/paymentVoid.action&apos;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Assuming the full request param map is ready.Url string is made of the api url which is given by HostedPCI + &quot;/iSynSApp/paymentVoid.action&quot;</inlineHelpText>
         <label>EndPoint Void</label>
@@ -98,6 +106,7 @@
     <fields>
         <fullName>endPoint_manageCCMapPhoneAPI__c</fullName>
         <defaultValue>&apos;/iSynSApp/manageCCMapPhoneAPI.action&apos;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>Assuming the full request param map is ready.Url string is made of the api url which is given by HostedPCI + &quot;/iSynSApp/manageCCMapPhoneAPI.action&quot;</inlineHelpText>
         <label>EndPoint Phone API</label>
@@ -110,6 +119,7 @@
     <fields>
         <fullName>locationName__c</fullName>
         <defaultValue>&quot;javasample1&quot;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The Location(iframe) Name is given by HostedPCI</inlineHelpText>
         <label>Location Name</label>
@@ -122,6 +132,7 @@
     <fields>
         <fullName>siteId__c</fullName>
         <defaultValue>&quot;528160&quot;</defaultValue>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The Site Id is given by HostedPCI</inlineHelpText>
         <label>Site Id</label>
@@ -133,6 +144,7 @@
     </fields>
     <fields>
         <fullName>userName__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <inlineHelpText>The username is given by HostedPCI</inlineHelpText>
         <label>User Name</label>
@@ -144,6 +156,7 @@
     </fields>
     <fields>
         <fullName>userPassKey__c</fullName>
+        <deprecated>false</deprecated>
         <description>The passkey is given by HostedPCI</description>
         <externalId>false</externalId>
         <inlineHelpText>The passkey is given by HostedPCI</inlineHelpText>

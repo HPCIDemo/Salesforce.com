@@ -47,6 +47,7 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
     <enableActivities>true</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>
@@ -56,6 +57,7 @@
     <enableStreamingApi>true</enableStreamingApi>
     <fields>
         <fullName>HostedPci_Response__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>HostedPci Response</label>
         <length>131072</length>
@@ -66,6 +68,7 @@
     <fields>
         <fullName>Token__c</fullName>
         <deleteConstraint>SetNull</deleteConstraint>
+        <deprecated>false</deprecated>
         <description>Credit card Token</description>
         <externalId>false</externalId>
         <label>Token</label>
@@ -78,6 +81,7 @@
     </fields>
     <fields>
         <fullName>address1__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Address Line 1:</label>
         <length>30</length>
@@ -88,6 +92,7 @@
     </fields>
     <fields>
         <fullName>address2__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Address Line 2:</label>
         <length>30</length>
@@ -98,6 +103,7 @@
     </fields>
     <fields>
         <fullName>amount__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Amount:</label>
         <length>5</length>
@@ -108,6 +114,7 @@
     </fields>
     <fields>
         <fullName>city__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>City:</label>
         <length>30</length>
@@ -118,6 +125,7 @@
     </fields>
     <fields>
         <fullName>comment__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Payment Comments:</label>
         <length>100</length>
@@ -128,6 +136,7 @@
     </fields>
     <fields>
         <fullName>country__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Country:</label>
         <length>20</length>
@@ -138,6 +147,7 @@
     </fields>
     <fields>
         <fullName>currency__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Currency:</label>
         <length>20</length>
@@ -149,6 +159,7 @@
     <fields>
         <fullName>merchantRefId__c</fullName>
         <caseSensitive>false</caseSensitive>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Merchant Reference:</label>
         <length>50</length>
@@ -159,6 +170,7 @@
     </fields>
     <fields>
         <fullName>paymentProfile__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Payment Profile:</label>
         <length>30</length>
@@ -169,6 +181,7 @@
     </fields>
     <fields>
         <fullName>processorRefId__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Processor Reference ID</label>
         <length>50</length>
@@ -179,6 +192,7 @@
     </fields>
     <fields>
         <fullName>state__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>State / Province:</label>
         <length>20</length>
@@ -189,6 +203,7 @@
     </fields>
     <fields>
         <fullName>zip__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Zip / Postal Code:</label>
         <length>7</length>

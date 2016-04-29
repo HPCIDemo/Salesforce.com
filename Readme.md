@@ -34,10 +34,10 @@ A user can see  transactions history.
 - Once the customer is ready to enter their credit card information the CSR will then explain to the customer that they are going to make a 3-way call to a secure credit card processing system for them to enter their card number in.
 - Click the button “create session” in order to get a session key.
 - Call the IVR and enter session key in order to begin session.
-- Once the session key is accepted, connect the customer with a 3-way call and ask them to enter their credit card number. 
+- Once the session key is accepted, connect the customer with a 3-way call and ask them to enter their credit card number.
 - The customer will be prompted to enter their card information by the IVR, the difference with our system is that the customer is never separated from the CSR.
-- When the customer is finished entering their card information the CSR will end the 3-way call with the IVR and continue with the rest of the call. 
-- Once the session is finished a token will pop up on the CSR’s screen which can then be used to finish the transaction. 
+- When the customer is finished entering their card information the CSR will end the 3-way call with the IVR and continue with the rest of the call.
+- Once the session is finished a token will pop up on the CSR’s screen which can then be used to finish the transaction.
 
 
 
@@ -91,9 +91,12 @@ In order to use public web site ,"Sites" feature have to be enabled in your Sale
 - Go to "Setup".
 - In the "Administration" panel on the left go to "Develop" > "Sites".
 - On the right click "New".
-- Enter site details, for the "Active Site Home Page" select "HostedPCIDemo" page.
+- Enter site details, for the "Active Site Home Page" select "HostedPCICheckout" page.
 - Go to "Sites". Click on the "Site Label".
-- Click on "Public Access Settings" . Scroll down, under "Enabled Visualforce Page Access" section click on "Edit". Select "HostedPCIMsg" from the left list, click "Add" > "Save".
+- Click on "Public Access Settings" . Scroll down, under "Enabled Visualforce Page Access" section click on "Edit". Select "ThreeDSecPin","HostedPCICheckoutMsg" from the left list, click "Add" > "Save".
+- Click “Edit” under profile details, scroll down and under “Custom Object
+Permissions”, enable “Read, Create, Delete, Edit” for Payments and Tokens object.
+- Click “Save”.
 
 #Contacts
 [HostedPCI Inc.]( http://www.hostedpci.com/) sales@hostedpci.com 1-866-850-3608.

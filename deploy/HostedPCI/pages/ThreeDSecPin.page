@@ -1,0 +1,117 @@
+<apex:page applyBodyTag="false" applyHtmlTag="false" controller="HostedPCICheckoutController"
+           showHeader="false" standardStylesheets="false">
+    <head>
+        <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-2.1.1.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery.ba-postmessage.2.0.0.min.js')}"/>
+        <script src="https://ccframe.hostedpci.com/WBSStatic/site60/proxy/js/hpci-cciframe-1.0.js"></script>
+        <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
+        <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
+            
+        <style type="text/css">
+			body {
+                background:linear-gradient(white, #2A94D6)fixed;
+            }
+            fieldset {
+                font-family: sans-serif;
+                border: 5px solid #1F497D;
+                border-radius: 5px;
+                padding: 15px;
+                margin-top: 10px;
+                background: white;
+            }
+            fieldset legend {
+                background: #1F497D;
+                color: #fff;
+                padding: 5px 10px;
+                font-size: 32px;
+                border-radius: 5px;
+                box-shadow: 0 0 0 5px #ddd;
+                margin-left: 10px;
+                margin-right: 60px;
+                width: auto;
+            }
+            .col-centered {
+                float: none;
+                margin: 0 auto;
+            }
+            #threeDSecFrame{
+            	border:none;
+            }
+        </style>
+        <script type="text/javascript">
+            var hpciCC3DSecPinFrameFullUrl;
+        	var siteId;
+        	var fullParentQStr;
+        	var fullParentHost;
+			var hpciCCFrameHost = "https://ccframe.hostedpci.com";
+        	var authTxnId;
+        
+        	jQuery(document).ready(function() {
+                siteId = document.getElementById("{!$Component.CCAcceptForm.siteId}").value;
+                fullParentQStr = document.getElementById("{!$Component.CCAcceptForm.fullParentQStr}").value;
+                fullParentHost = document.getElementById("{!$Component.CCAcceptForm.fullParentHost}").value;
+                authTxnId = document.getElementById("{!$Component.CCAcceptForm.authTxnId}").value;
+				//3DSec required parameter
+                document.getElementById("{!$Component.CCAcceptForm.action3DSec}").value = "verifyresp";
+                
+                hpciCC3DSecPinFrameFullUrl = "https://ccframe.hostedpci.com/iSynSApp/appUserVerify3DResp!verificationForm.action?"
+                +"sid=" + siteId
+                +"&authTxnId=" + authTxnId
+                +"&fullParentHost=https://" + fullParentHost
+                +"&fullParentQStr=" + fullParentQStr;
+
+                document.getElementById("threeDSecFrame").src=hpciCC3DSecPinFrameFullUrl;                
+             });
+        
+        	 var hpciSiteErrorHandler = function(errorCode, errorMsg) {
+                // Please the following alert to properly display the error message
+                //alert("Error while processing credit card code:" + errorCode + "; msg:"   + errorMsg);
+                document.getElementById('errorMessage').style.display = 'block';
+        	 }
+
+             var hpci3DSitePINSuccessHandler = function() {      	       
+               processPayment();
+             }
+
+             var hpci3DSitePINErrorHandler = function() {
+      	       // Adapt the following message / action to match your required experience
+               alert("Could not verify PIN for the credit card");
+             }
+
+             var hpciCCPreliminarySuccessHandler = function(hpciCCTypeValue, hpciCCBINValue, hpciCCValidValue, hpciCCLengthValue) {
+                // Adapt the following message / action to match your required experience
+                alert("Received preliminary credit card details");
+             }
+
+             var hpciCVVPreliminarySuccessHandler = function(hpciCVVLengthValue) {
+                // Adapt the following message / action to match your required experience
+                alert("Received preliminary CVV details");
+             }
+        </script>
+    </head>
+    <body>
+        <div class="col-md-7 col-centered">
+            
+            <apex:form id="CCAcceptForm">
+                <apex:messages id="error" styleClass="errorMsg" layout="table" style="margin-top:1em;"/>
+                <fieldset>
+                    <legend>Web Checkout 3D Secure</legend>
+                    <!-- Error message for invalid credit card -->
+                    <div id="errorMessage" style="display:none;color:red"><label>Invalid card number, try again</label>
+                        <br/>
+                    </div>
+                    <iframe id="threeDSecFrame" name="threeDSecFrame" onload="receiveHPCIMsg()" src="" width="450" height="400">
+                            If you can see this, your browser doesn't understand IFRAME.
+                    </iframe> 
+                </fieldset>
+            	<apex:inputHidden id="siteId" value="{!siteId}"/>
+                <apex:inputHidden id="fullParentQStr" value="{!fullParentQStr}"/>
+                <apex:inputHidden id="fullParentHost" value="{!fullParentHost}"/>
+                <apex:inputHidden id="authTxnId"  value="{!authTxnId}" />
+                <apex:inputHidden id="action3DSec" value="{!action3DSec}"/>
+                <apex:actionFunction action="{!processThreeDSecPayment}" name="processPayment" />
+            </apex:form>
+			                                                                                 
+        </div>     
+    </body>
+</apex:page>

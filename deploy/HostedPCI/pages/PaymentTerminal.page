@@ -40,6 +40,21 @@
         input[type="text"]:hover, select:hover{
             background-color: #ddddff;
         }
+      	button:hover{
+            border: 1px #428BCA solid;
+            box-shadow: 5px 5px 3px 0px gray;
+        }
+      	button[disabled]{
+            color: GrayText;
+            background: #ddd;
+            border-width: 2px;
+			border-style: inset;
+            border-color: #ddd;
+        }
+      	button[disabled]:hover{
+         	cursor: not-allowed;                                   
+            box-shadow:none;
+        }    
         .toggler{
           display:none;
         }
@@ -48,6 +63,7 @@
             max-width: 823px;
             border-radius: 4px;
             background-color: #F8F8F8;
+            margin-top: 10px;
         }
 		.trSummary, .ccInfo{
 			display:none;
@@ -55,7 +71,7 @@
     </style>
     <script type="text/javascript">
        // Initiate processPayment function on processPaymentButton click
-        function processPayment() {
+        function SubmitPayment() {
             // Get values from the form
             var ccToken = jQuery('#ccNum').val();
             var cvvToken = jQuery('#ccCVV').val();
@@ -84,7 +100,7 @@
                     function(resultMap,event){
                         if(resultMap['pxyResponse.threeDSEnrolled'] =='Y'){
                             jQuery('#authTxnId').val(resultMap['pxyResponse.threeDSTransactionId']);
-                        	jQuery('#CCAcceptForm').submit();
+                        	processThreeDSecPayment();
                         }
                     	if(resultMap['pxyResponse.responseStatus'] == "approved") {
                                jQuery('#processPaymentButton').attr("disabled", true);
@@ -106,7 +122,7 @@
         }// End of processPayment
 
       	var hpciCCFrameHost = "https://ccframe.hostedpci.com";
-        var hpciCCFrameFullUrl;
+        var hpciCCFrameFullUrl = "";
         var hpciCCFrameName = "ccframe"; // use the name of the frame containing the credit card
 
         var hpciSiteErrorHandler = function(errorCode, errorMsg) {
@@ -135,14 +151,12 @@
             var ccBINInput = document.getElementById("ccBIN");
             ccBINInput.value = ccBINValue;
 
-            processPayment();
+            SubmitPayment();
 
         }
 
-        var hpci3DSitePINSuccessHandler = function() {
-            // name of the form submission for ecommerce site
-            var pendingForm = document.getElementById("CCAcceptForm");
-            processPayment();
+        var hpci3DSitePINSuccessHandler = function() {            
+            SubmitPayment();
         }
 
         var hpci3DSitePINErrorHandler = function() {
@@ -162,18 +176,26 @@
 
         jQuery(document).ready(function() {
             var firstLoad = true;
+            var counter=0;
+            
             //Initialize configuration data
-            if(firstLoad){
+            if(firstLoad){               
                var iframeLoadId = setInterval(function(){
                populateData();
-               hpciCCFrameFullUrl = document.getElementById("{!$Component.config.iFrameSrc}").value;
-
+               counter +=200;
+               
+               if(document.getElementById("{!$Component.CCAcceptForm.iFrameSrc}"))
+                   hpciCCFrameFullUrl = document.getElementById("{!$Component.CCAcceptForm.iFrameSrc}").value;
                if(hpciCCFrameFullUrl.length > 0){
                		document.getElementById("ccframe").src=hpciCCFrameFullUrl;
                     jQuery('#ccInfo').removeClass("ccInfo");
                     firstLoad = false;
                     clearInterval(iframeLoadId);
                  	}
+               if(counter>60000){
+                   firstLoad = false;
+                   clearInterval(iframeLoadId);
+               }
                 }, 200);
              }
 
@@ -189,7 +211,7 @@
     </script>
   </head>
   <div class="col-md-7 col-centered">
-  <form id="CCAcceptForm" action ="ThreeDSecPinFrame" method="post">
+  <apex:form id="CCAcceptForm">
       <fieldset>
           <!-- Form Name -->
           <apex:messages id="error" styleClass="errorMsg" layout="table" style="margin-top:1em;"/>
@@ -359,8 +381,7 @@
                       </div>
                       <div class="col-xs-4 col-sm-3 col-md-5">
                       <!-- id is used in HostedPCIMsg page -->
-                          <select id="expiryYear" name="expiryYear" class="selectpicker">
-                              <option value="15">2015</option>
+                          <select id="expiryYear" name="expiryYear" class="selectpicker">                              
                               <option value="16">2016</option>
                               <option value="17">2017</option>
                               <option value="18">2018</option>
@@ -375,21 +396,22 @@
                           </select>
                       </div>
                       <br/>
-                      <br/>
-                      <div class="row">
-                          <div class="col-xs-6 col-sm-3 col-md-4">
-                              <!-- Submit button -->
-                              <button type="button" value="Submit"  class="btn btn-primary"
-                                      style ="background-image: linear-gradient(to bottom, #428BCA 0px, #2D6CA2 100%);"
-                                      id="processPaymentButton" onClick='sendHPCIMsg()'>Process Payment</button>
-                          </div>
-                          <div class="col-xs-6 col-sm-3 col-md-4">
-                              <!-- Reset button -->
-                                <button id="paymentResetButton" type="button"  value="Reset Payment" class="btn btn-primary"
-                                    style ="background-image: linear-gradient(to bottom, #428BCA 0px, #2D6CA2 100%);">Reset Payment</button><br />
-                          </div>
-                      </div>
+                      <br/>                      
                   </div><!-- row -->
+                  <div class="row">                                                                                                            
+                      <div class="col-xs-3 col-sm-6 col-md-6">
+                      		<!-- Submit button -->
+                            <button type="button" value="Submit"                                        
+                                    id="processPaymentButton" onClick='sendHPCIMsg()'>Process Payment</button>
+                      </div>
+                      <div class="col-xs-2 col-sm-6 col-md-6" >
+                            <div style="float:right;">
+                            	<!-- Reset button -->
+                                <button id="paymentResetButton" type="button"  value="Reset Payment" 
+                                    >Reset Payment</button><br />
+                            </div>
+                      </div>                      			
+                  </div>
               </fieldset>
 			  <fieldset id="trSummary" class="trSummary">
                         <legend>Transaction Summary</legend>
@@ -419,7 +441,7 @@
                         </div><!-- row -->
                         <div class="row">
                             <div class="col-md-12">
-                                <button id="fullMessageToggle" type="button">Show full message</button>
+                                <button id="fullMessageToggle" type="button">Show full message</button>                                
                                 <div class="toggler">
                                     <div id="effect" >
                                         <!-- Gets full plain message received from Hosted PCI  -->
@@ -429,9 +451,15 @@
                             </div>
                         </div><!-- row -->
                   		<div class="row">
+                          <apex:actionFunction action="{!populateData}" name="populateData" rerender="config"/>                                
+                          <apex:actionFunction action="{!processThreeDSecPayment}" name="processThreeDSecPayment" />
+                          <!-- HostedPCI iframe "src" attribute(populated by a controller) -->
+                          <apex:outputPanel id="config" >
+                               <apex:inputHidden id="iFrameSrc" value="{!iFrameSrc}"/>    
+                          </apex:outputPanel>
                           <!-- Hidden rows that are required by the iframe -->
-                          <div class="col-xs-6 col-sm-3 col-md-4">
-                              <input type="hidden" id="ccNum" name="ccNum" value="" class="form-control"/>
+                          <div class="col-xs-6 col-sm-3 col-md-4">                                                            
+                          	  <input type="hidden" id="ccNum" name="ccNum" value="" class="form-control"/>
                               <input type="hidden" id="ccCVV" name="ccCVV" value="" class="form-control"/>
                   			  <input type="hidden" id="ccBIN" name="ccBIN" value="" class="form-control"/>
                               <input type="hidden" id="action3DSec" name="action3DSec" value="verifyenroll" class="form-control"/>
@@ -440,10 +468,6 @@
                         </div>
               </fieldset>
        </fieldset>
-  </form>
-  </div>
-  <apex:form id="config">
-    <apex:inputHidden id="iFrameSrc" value="{!iFrameSrc}"/>
-    <apex:actionFunction action="{!populateData}" name="populateData" reRender="config"/>
   </apex:form>
+  </div>
 </apex:page>

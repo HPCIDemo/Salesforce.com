@@ -10,7 +10,6 @@
             fieldset {
                 font-family: sans-serif;
                 border: 5px solid #1F497D;;
-                background: #CDE8F0;
                 border-radius: 5px;
                 padding: 15px;
                 margin-top: 10px;
@@ -40,6 +39,17 @@
             input[type="text"]:hover, select:hover{
                 background-color: #ddddff;
             }
+        	button[disabled]{
+                color: GrayText;
+                background: #ddd;
+                border-width: 2px;
+                border-style: inset;
+                border-color: #ddd;
+            }
+            button[disabled]:hover{
+                cursor: not-allowed;                                   
+                box-shadow:none;
+            }
             .toggler{
               display:none;
             }
@@ -48,6 +58,7 @@
                 max-width: 823px;
                 border-radius: 4px;
                 background-color: #F8F8F8;
+                margin-top: 10px;
             }
             #threeDSecFrame{
             	border:none;
@@ -57,6 +68,10 @@
             }
             .trSummary{
             	display:none;
+            }
+            button:hover, .btn:hover{
+                border: 1px #428BCA solid;
+                box-shadow: 5px 5px 3px 0px gray;
             }
         </style>
         <script type="text/javascript">
@@ -118,6 +133,7 @@
                     authTxnId,
                     function(resultMap,event){
                         jQuery('#threeDSecFrame').addClass("threeDPin");
+                        jQuery('#checkout').css('background','#CDE8F0');
                         jQuery('#trSummary').removeClass("trSummary");
                         jQuery('#message').text(resultMap['fullMsg']);
                         jQuery('#paymentStatus').text(resultMap['pxyResponse.responseStatus']);
@@ -137,9 +153,7 @@
                 document.getElementById('errorMessage').style.display = 'block';
         	 }
 
-             var hpci3DSitePINSuccessHandler = function() {
-      	       // name of the form submission for ecommerce site
-               var pendingForm = document.getElementById("CCAcceptForm")
+             var hpci3DSitePINSuccessHandler = function() {      	       
                processPayment();
              }
 
@@ -164,7 +178,7 @@
     <div class="col-md-7 col-centered">
     	<form id="CCAcceptForm" action ="" method="post">
             <apex:messages id="error" styleClass="errorMsg" layout="table" style="margin-top:1em;"/>
-        	<fieldset >
+        	<fieldset id="checkout">
                 <legend>Web Checkout 3D Secure</legend>
                 <!-- Error message for invalid credit card -->
                 <div id="errorMessage" style="display:none;color:red"><label>Invalid card number, try again</label><br/></div>
@@ -204,7 +218,7 @@
                                     <div style="float:right;">
                                         <apex:commandButton action="{!back}" value="Back"/>
                                     </div>
-                                </apex:form>
+                                </apex:form>                                
                                 <div class="toggler">
                                     <div id="effect" >
                                         <!-- Gets full plain message received from Hosted PCI  -->

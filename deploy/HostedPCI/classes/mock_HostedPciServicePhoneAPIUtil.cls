@@ -2,8 +2,8 @@
 global class mock_HostedPciServicePhoneAPIUtil implements HttpCalloutMock{
     
     global HttpResponse respond(HttpRequest req){
-    	system.debug(req);
-		HttpResponse res = new HttpResponse();
+    	system.debug(req);		
+        HttpResponse res = new HttpResponse();
      	res.setStatusCode(200);
      	res.setStatus('Ok');                
         
@@ -27,7 +27,7 @@ global class mock_HostedPciServicePhoneAPIUtil implements HttpCalloutMock{
 			+'sessionTask[3].exceptionMsg=&sessionTask[3].comment=Masked+CVV%3A200&'
 			+'sessionTask[3].paramName=&sessionTask[3].paramValue=&'
 			+'sessionTask[3].createTS=2015-11-10+03%3A32%3A57+PM+EST';
-                
+             
      	res.setBody(response);
 	 	return res;   
     }

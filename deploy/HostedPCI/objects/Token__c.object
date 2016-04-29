@@ -47,6 +47,7 @@
     <allowInChatterGroups>false</allowInChatterGroups>
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
     <enableActivities>true</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>true</enableFeeds>
@@ -56,6 +57,7 @@
     <enableStreamingApi>true</enableStreamingApi>
     <fields>
         <fullName>cardType__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Card Type</label>
         <length>20</length>
@@ -68,6 +70,7 @@
     <fields>
         <fullName>ccNum__c</fullName>
         <caseSensitive>false</caseSensitive>
+        <deprecated>false</deprecated>
         <description>Token</description>
         <externalId>true</externalId>
         <label>Card Number</label>
@@ -80,6 +83,7 @@
     </fields>
     <fields>
         <fullName>expiryMonth__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Expiry Month</label>
         <length>9</length>
@@ -91,6 +95,7 @@
     </fields>
     <fields>
         <fullName>expiryYear__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Expiry Year</label>
         <length>4</length>
@@ -102,6 +107,7 @@
     </fields>
     <fields>
         <fullName>firstName__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>First Name:</label>
         <length>20</length>
@@ -113,6 +119,7 @@
     </fields>
     <fields>
         <fullName>lastName__c</fullName>
+        <deprecated>false</deprecated>
         <externalId>false</externalId>
         <label>Last Name:</label>
         <length>20</length>

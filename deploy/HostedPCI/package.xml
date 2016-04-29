@@ -3,8 +3,8 @@
     <types>
         <members>CallCenterController</members>
         <members>CallCenterController_Test</members>
-        <members>HostedPCIMsgController</members>
-        <members>HostedPCIMsgController_Test</members>
+        <members>HostedPCICheckoutController</members>
+        <members>HostedPCICheckoutController_Test</members>
         <members>HostedPCISettingsController</members>
         <members>HostedPCISettingsController_Test</members>
         <members>HostedPciServiceUtil</members>
@@ -18,10 +18,11 @@
     </types>
     <types>
         <members>CallCenter</members>
-        <members>HostedPCIDemo</members>
-        <members>HostedPCIMsg</members>
+        <members>HostedPCICheckout</members>
+        <members>HostedPCICheckoutMsg</members>
         <members>HostedPCISettings</members>
         <members>PaymentTerminal</members>
+        <members>ThreeDSecPin</members>
         <members>ThreeDSecPinFrame</members>
         <name>ApexPage</name>
     </types>
