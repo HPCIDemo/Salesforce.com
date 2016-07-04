@@ -31,7 +31,7 @@
         <name>CustomApplication</name>
     </types>
     <types>
-        <members>HostedPCISettings__c</members>
+        <members>HostedPCIConfigurations__c</members>
         <members>Payment__c</members>
         <members>Token__c</members>
         <name>CustomObject</name>

@@ -104,6 +104,12 @@ public with sharing class CallCenterController {
         newToken.expiryYear__c = expiryYear;     
                 
         try {
+            //Check if the user has create access
+            if (!Schema.sObjectType.Token__c.isCreateable()){
+                  ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
+	                                                    'Insufficient access')); 
+	     		return;
+			}
             upsert newToken newToken.ccNum__c;
             
             // Once the token is inserted, the sObject will be

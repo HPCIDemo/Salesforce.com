@@ -3,7 +3,7 @@ public with sharing class PaymentTerminalController {
     public string LocationName{get; set;}
     public string fullParentQStr{get; set;}
     public string fullParentHost{get; set;}
-    public string iFrameSrc{get; set;}    
+    public string iFrameSrc{get; set;}
 
     @RemoteAction
     public static Map<String,String> processPayment(String ccToken, String cvvToken, String cardType,
@@ -72,6 +72,12 @@ public with sharing class PaymentTerminalController {
         newToken.expiryYear__c = expiryYear;
 
         try {
+            //Check if the user has create access
+            if (!Schema.sObjectType.Token__c.isCreateable()){
+                  ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
+	                                                    'Insufficient access'));
+	     		return;
+			}
             upsert newToken newToken.ccNum__c;
 
             // Once the token is inserted, the sObject will be
@@ -117,16 +123,14 @@ public with sharing class PaymentTerminalController {
         fullParentQStr = ApexPages.currentPage().getUrl();
         fullParentHost = ApexPages.currentPage().getHeaders().get('Host');
 
-        SiteId = HostedPCISettings__c.getInstance().siteId__c;
-        LocationName = HostedPCISettings__c.getInstance().locationName__c;
+        SiteId = HostedPCIConfigurations__c.getInstance().siteId__c;
+        LocationName = HostedPCIConfigurations__c.getInstance().locationName__c;
 
         if((String.isEmpty(SiteId))&&(String.isEmpty(LocationName))){
             try{
-                HostedPCISettings__c hostedPciConf = HostedPCISettings__c.getOrgDefaults();
-
-                hostedPciConf.userName__c = 'sampqa1stgAdmAPI';
-                hostedPciConf.apiType__c = 'pxyhpci';
-                hostedPciConf.userPassKey__c = '.OQdIHVtVJSg-W-Zr40QQGY1xyhvGjUH';
+                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getOrgDefaults();
+				                                
+                hostedPciConf.apiType__c = 'pxyhpci';                
                 hostedPciConf.endPointVoid__c = '/iSynSApp/paymentVoid.action';
                 hostedPciConf.endPointCapture__c = '/iSynSApp/paymentCapture.action';
                 hostedPciConf.endPointCredit__c = '/iSynSApp/paymentCredit.action';
@@ -139,15 +143,15 @@ public with sharing class PaymentTerminalController {
                 hostedPciConf.siteId__c = '528160';
 
                 //Check if the user has create access
-                if (!Schema.sObjectType.HostedPCISettings__c.isCreateable()){
+                if (!Schema.sObjectType.HostedPCIConfigurations__c.isCreateable()){
                     ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
 	                                                    'Insufficient access'));
 	      			return null;
-			    }
+			    }               
                 insert hostedPciConf;
-
-                SiteId = HostedPCISettings__c.getInstance().siteId__c;
-                LocationName = HostedPCISettings__c.getInstance().locationName__c;
+          
+                SiteId = HostedPCIConfigurations__c.getInstance().siteId__c;
+                LocationName = HostedPCIConfigurations__c.getInstance().locationName__c;
                 iFrameSrc = 'https://ccframe.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&'
             			+'locationName='+ LocationName
             			+'&sid=' + SiteId
@@ -169,30 +173,30 @@ public with sharing class PaymentTerminalController {
         }
         return null;
     }
-    
+
     public PageReference processThreeDSecPayment() {
        	PageReference nextPage = Page.ThreeDSecPinFrame;
 
         nextPage.getParameters().put('authTxnId', ApexPages.currentPage().getParameters().get('authTxnId'));
         nextPage.getParameters().put('ccNum', ApexPages.currentPage().getParameters().get('ccNum'));
         nextPage.getParameters().put('ccCVV', ApexPages.currentPage().getParameters().get('ccCVV'));
-        nextPage.getParameters().put('cardType', ApexPages.currentPage().getParameters().get('cardType'));           
-        nextPage.getParameters().put('expiryMonth', ApexPages.currentPage().getParameters().get('expiryMonth'));           
-        nextPage.getParameters().put('expiryYear', ApexPages.currentPage().getParameters().get('expiryYear'));           
-        nextPage.getParameters().put('firstName', ApexPages.currentPage().getParameters().get('firstName'));           
-        nextPage.getParameters().put('lastName', ApexPages.currentPage().getParameters().get('lastName'));           
-        nextPage.getParameters().put('address1', ApexPages.currentPage().getParameters().get('address1'));           
-        nextPage.getParameters().put('address2', ApexPages.currentPage().getParameters().get('address2'));           
-        nextPage.getParameters().put('city', ApexPages.currentPage().getParameters().get('city'));           
-        nextPage.getParameters().put('state', ApexPages.currentPage().getParameters().get('state'));           
-		nextPage.getParameters().put('zip', ApexPages.currentPage().getParameters().get('zip'));           
-        nextPage.getParameters().put('country', ApexPages.currentPage().getParameters().get('country'));           
-        nextPage.getParameters().put('currency', ApexPages.currentPage().getParameters().get('currency'));           
-        nextPage.getParameters().put('amount', ApexPages.currentPage().getParameters().get('amount'));           
-        nextPage.getParameters().put('comment', ApexPages.currentPage().getParameters().get('comment'));           
-        nextPage.getParameters().put('paymentProfile', ApexPages.currentPage().getParameters().get('paymentProfile'));           
-        
-        return nextPage; 
+        nextPage.getParameters().put('cardType', ApexPages.currentPage().getParameters().get('cardType'));
+        nextPage.getParameters().put('expiryMonth', ApexPages.currentPage().getParameters().get('expiryMonth'));
+        nextPage.getParameters().put('expiryYear', ApexPages.currentPage().getParameters().get('expiryYear'));
+        nextPage.getParameters().put('firstName', ApexPages.currentPage().getParameters().get('firstName'));
+        nextPage.getParameters().put('lastName', ApexPages.currentPage().getParameters().get('lastName'));
+        nextPage.getParameters().put('address1', ApexPages.currentPage().getParameters().get('address1'));
+        nextPage.getParameters().put('address2', ApexPages.currentPage().getParameters().get('address2'));
+        nextPage.getParameters().put('city', ApexPages.currentPage().getParameters().get('city'));
+        nextPage.getParameters().put('state', ApexPages.currentPage().getParameters().get('state'));
+		nextPage.getParameters().put('zip', ApexPages.currentPage().getParameters().get('zip'));
+        nextPage.getParameters().put('country', ApexPages.currentPage().getParameters().get('country'));
+        nextPage.getParameters().put('currency', ApexPages.currentPage().getParameters().get('currency'));
+        nextPage.getParameters().put('amount', ApexPages.currentPage().getParameters().get('amount'));
+        nextPage.getParameters().put('comment', ApexPages.currentPage().getParameters().get('comment'));
+        nextPage.getParameters().put('paymentProfile', ApexPages.currentPage().getParameters().get('paymentProfile'));
+
+        return nextPage;
     }
 
 }

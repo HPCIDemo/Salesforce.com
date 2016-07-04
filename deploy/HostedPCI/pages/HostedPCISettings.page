@@ -63,7 +63,7 @@
 	                <apex:pageBlock title="{!modalTitle}">
                         <apex:PanelGrid columns="2">
                             <apex:outputLabel value="Enter new value:"/>
-                            <apex:inputText value="{!newValue}"/>							
+                            <apex:inputSecret value="{!newValue}"/>							
                             <apex:commandButton value="Save" action="{!save}" rerender="modal,config"/>
                             <apex:commandButton value="Cancel" style="float:right;" action="{!closePopup}" rerender="modal"/>
             			</apex:PanelGrid>
