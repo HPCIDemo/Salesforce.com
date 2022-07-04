@@ -60,9 +60,10 @@ public with sharing class CallCenterController {
         hpciRequestParamMap.put('pxyCreditCard.cardCodeVerification', cvvToken);                
         hpciRequestParamMap.put('pxyTransaction.txnAmount', paymentAmount);
         hpciRequestParamMap.put('pxyTransaction.txnCurISO', hpciCurrency);
-        DateTime timeStamp = DateTime.now();   
-        String merchantRefId = String.valueOf(timeStamp.millisecond()+ 1000000);
+        
+        String merchantRefId = String.valueOf(System.currentTimeMillis());
         hpciRequestParamMap.put('pxyTransaction.merchantRefId',merchantRefId);
+               
         hpciRequestParamMap.put('pxyTransaction.txnPayName', paymentProfile);
         hpciRequestParamMap.put('pxyTransaction.txnComment', paymentComments);     
         hpciRequestParamMap.put('pxyCustomerInfo.billingLocation.firstName', firstName);
@@ -116,11 +117,11 @@ public with sharing class CallCenterController {
             // populated with an ID.
             ID newTokenID = newToken.ID;
             
-            DateTime timeStamp = DateTime.now();
-            if(processorRefId == '0'){                
-                newPayment.Name = String.valueOf(timeStamp.millisecond());                
+            if(processorRefId == '0' || String.isBlank(processorRefId)){
+                processorRefId = '';
+                newPayment.Name = String.valueOf(System.currentTimeMillis());
             }else{
-                newPayment.Name = processorRefId + '-' + String.valueOf(timeStamp.millisecond());                
+                newPayment.Name = processorRefId + '-' + String.valueOf(System.currentTimeMillis());
             }
                       
             newPayment.address1__c = address1;

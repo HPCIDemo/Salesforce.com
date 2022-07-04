@@ -1,8 +1,8 @@
 <apex:page sidebar="false" controller="ThreeDSecPinFrameController">
     <head>
-        <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-2.1.1.js')}"/>
+        <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-3.4.1.min.js')}"/>
         <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery.ba-postmessage.2.0.0.min.js')}"/>
-        <script src="https://ccframe.hostedpci.com/WBSStatic/site60/proxy/js/hpci-cciframe-1.0.js"></script>
+        <script src="https://ccifrm01.hostedpci.com/WBSStatic/site60/proxy/js/hpci-cciframe-1.0.js"></script>
         <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
         <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
 
@@ -54,8 +54,7 @@
               display:none;
             }
             #message{
-                word-wrap: break-word;
-                max-width: 823px;
+                word-break: break-all;
                 border-radius: 4px;
                 background-color: #F8F8F8;
                 margin-top: 10px;
@@ -69,6 +68,12 @@
             .trSummary{
             	display:none;
             }
+        	#trSummary label, #trSummary div.row > div:nth-child(2) {
+        		padding: 10px 6px;
+            }
+            #trSummary label {
+                float: right !important;
+            }
             button:hover, .btn:hover{
                 border: 1px #428BCA solid;
                 box-shadow: 5px 5px 3px 0px gray;
@@ -79,16 +84,16 @@
         	var siteId;
         	var fullParentQStr;
         	var fullParentHost;
-			var hpciCCFrameHost = "https://ccframe.hostedpci.com";
+			var hpciCCFrameHost = "https://ccifrm01.hostedpci.com";
         	var authTxnId;
 
             jQuery(document).ready(function() {
-                siteId = document.getElementById("{!$Component.config.siteId}").value;
-                fullParentQStr = document.getElementById("{!$Component.config.fullParentQStr}").value;
-                fullParentHost = document.getElementById("{!$Component.config.fullParentHost}").value;
-                authTxnId = document.getElementById("{!$Component.config.authTxnId}").value;
+                siteId = document.getElementById("{!$Component.CCAcceptForm.siteId}").value;
+                fullParentQStr = document.getElementById("{!$Component.CCAcceptForm.fullParentQStr}").value;
+                fullParentHost = document.getElementById("{!$Component.CCAcceptForm.fullParentHost}").value;
+                authTxnId = document.getElementById("{!$Component.CCAcceptForm.authTxnId}").value;
 
-                hpciCC3DSecPinFrameFullUrl = "https://ccframe.hostedpci.com/iSynSApp/appUserVerify3DResp!verificationForm.action?"
+                hpciCC3DSecPinFrameFullUrl = "https://ccifrm01.hostedpci.com/iSynSApp/appUserVerify3DResp!verificationForm.action?"
                 +"sid=" + siteId
                 +"&authTxnId=" + authTxnId
                 +"&fullParentHost=https://" + fullParentHost
@@ -105,25 +110,25 @@
 
         // Initiate processPayment function on processPaymentButton click
         function processPayment() {
-            var ccToken = document.getElementById("{!$Component.config.ccNum}").value;
-            var cvvToken = document.getElementById('{!$Component.config.ccCVV}').value;
-            var cardType = document.getElementById('{!$Component.config.cardType}').value;
-            var expiryMonth = document.getElementById("{!$Component.config.expiryMonth}").value;
-            var expiryYear = document.getElementById("{!$Component.config.expiryYear}").value;
-            var firstName = document.getElementById("{!$Component.config.firstName}").value;
-            var lastName = document.getElementById("{!$Component.config.lastName}").value;
-            var address1 = document.getElementById("{!$Component.config.address1}").value;
-            var address2 = document.getElementById("{!$Component.config.address2}").value;
-            var city = document.getElementById("{!$Component.config.city}").value;
-            var state = document.getElementById("{!$Component.config.state}").value;
-            var zip = document.getElementById("{!$Component.config.zip}").value;
-            var country = document.getElementById("{!$Component.config.country}").value;
-            var currency = document.getElementById("{!$Component.config.currency}").value;
-            var paymentAmount = document.getElementById("{!$Component.config.amount}").value;
-            var paymentComments = document.getElementById("{!$Component.config.comment}").value;
-            var paymentProfile = document.getElementById("{!$Component.config.paymentProfile}").value;
+            var ccToken = document.getElementById("{!$Component.CCAcceptForm.ccNum}").value;
+            var cvvToken = document.getElementById('{!$Component.CCAcceptForm.ccCVV}').value;
+            var cardType = document.getElementById('{!$Component.CCAcceptForm.cardType}').value;
+            var expiryMonth = document.getElementById("{!$Component.CCAcceptForm.expiryMonth}").value;
+            var expiryYear = document.getElementById("{!$Component.CCAcceptForm.expiryYear}").value;
+            var firstName = document.getElementById("{!$Component.CCAcceptForm.firstName}").value;
+            var lastName = document.getElementById("{!$Component.CCAcceptForm.lastName}").value;
+            var address1 = document.getElementById("{!$Component.CCAcceptForm.address1}").value;
+            var address2 = document.getElementById("{!$Component.CCAcceptForm.address2}").value;
+            var city = document.getElementById("{!$Component.CCAcceptForm.city}").value;
+            var state = document.getElementById("{!$Component.CCAcceptForm.state}").value;
+            var zip = document.getElementById("{!$Component.CCAcceptForm.zip}").value;
+            var country = document.getElementById("{!$Component.CCAcceptForm.country}").value;
+            var currency = document.getElementById("{!$Component.CCAcceptForm.currency}").value;
+            var paymentAmount = document.getElementById("{!$Component.CCAcceptForm.amount}").value;
+            var paymentComments = document.getElementById("{!$Component.CCAcceptForm.comment}").value;
+            var paymentProfile = document.getElementById("{!$Component.CCAcceptForm.paymentProfile}").value;
  			var action3DSec =  jQuery("#action3DSec").val();
-            var authTxnId = document.getElementById("{!$Component.config.authTxnId}").value;
+            var authTxnId = document.getElementById("{!$Component.CCAcceptForm.authTxnId}").value;
 
             Visualforce.remoting.Manager.invokeAction(
                 '{!$RemoteAction.ThreeDSecPinFrameController.processPayment}',
@@ -161,103 +166,88 @@
       	       // Adapt the following message / action to match your required experience
                alert("Could not verify PIN for the credit card");
              }
-
-             var hpciCCPreliminarySuccessHandler = function(hpciCCTypeValue, hpciCCBINValue, hpciCCValidValue, hpciCCLengthValue) {
-                // Adapt the following message / action to match your required experience
-                alert("Received preliminary credit card details");
-             }
-
-             var hpciCVVPreliminarySuccessHandler = function(hpciCVVLengthValue) {
-                // Adapt the following message / action to match your required experience
-                alert("Received preliminary CVV details");
-             }
-
-
       </script>
     </head>
     <div class="col-md-7 col-centered">
-    	<form id="CCAcceptForm" action ="" method="post">
+    	<apex:form id="CCAcceptForm">
             <apex:messages id="error" styleClass="errorMsg" layout="table" style="margin-top:1em;"/>
         	<fieldset id="checkout">
                 <legend>Web Checkout 3D Secure</legend>
                 <!-- Error message for invalid credit card -->
                 <div id="errorMessage" style="display:none;color:red"><label>Invalid card number, try again</label><br/></div>
-                <iframe id="threeDSecFrame" name="threeDSecFrame" onload="receiveHPCIMsg()" src="" width="450" height="400">
+                <iframe id="threeDSecFrame" name="threeDSecFrame" onload="receiveHPCIMsg()" src="" width="100%" height="500px">
 						If you can see this, your browser doesn't understand IFRAME.
 				</iframe>
             <fieldset id="trSummary" class="trSummary">
             	<legend>Transaction Summary</legend>
                 	<div class="row">
-                    	<div class="col-md-8">
-                        	<label>Payment Status: </label>
-                            <div id="paymentStatus" style="word-wrap: break-word;"></div><br />
+                        <div class="col-xs-4 col-sm-3 col-md-4">                            
+                            <label>Payment Status: </label>
                         </div>
-                        </div><!-- row -->
-                        <div class="row">
-                            <div class="col-md-8">
-                                <label>Reference ID: </label>
-                                <div id="referenceId" style="word-wrap: break-word;"></div><br />
-                            </div>
-                        </div><!-- row -->
-                        <div class="row">
-                            <div class="col-md-8">
-                                <label>Response Code: </label>
-                                <div id="paymentResponseCode" style="word-wrap: break-word;"></div><br />
-                            </div>
-                        </div><!-- row -->
-                        <div class="row">
-                            <div class="col-md-8">
-                                <label>Response Message: </label>
-                                <div id="paymentResponseMessage" style="word-wrap: break-word;"></div><br />
-                            </div>
-                        </div><!-- row -->
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button id="fullMessageToggle" type="button">Show full message</button>
-                                <apex:form >
-                                    <div style="float:right;">
-                                        <apex:commandButton action="{!back}" value="Back"/>
-                                    </div>
-                                </apex:form>                                
-                                <div class="toggler">
-                                    <div id="effect" >
-                                        <!-- Gets full plain message received from Hosted PCI  -->
-                                        <div id="message"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div><!-- row -->
-                  		<div class="row">
-                          <!-- Hidden rows that are required by the iframe -->
-                          <div class="col-xs-6 col-sm-3 col-md-4">
-                              <input type="hidden" id="action3DSec" name="action3DSec" value="verifyresp" class="form-control"/>
-						  </div>
+                        <div id="paymentStatus" class="col-xs-4 col-sm-3 col-md-4"></div>
+                    </div><!-- row -->
+                    <div class="row">
+                        <div class="col-xs-4 col-sm-3 col-md-4">
+                            <label>Reference ID: </label>
                         </div>
+                        <div id="referenceId" class="col-xs-4 col-sm-3 col-md-4"></div>
+                    </div><!-- row -->
+                    <div class="row">
+                        <div class="col-xs-4 col-sm-3 col-md-4">
+                            <label>Response Code: </label>
+                        </div>
+                        <div id="paymentResponseCode" class="col-xs-4 col-sm-3 col-md-4"></div>
+                	</div><!-- row -->
+                    <div class="row">
+                        <div class="col-xs-4 col-sm-3 col-md-4">
+                            <label>Response Message: </label>
+                        </div>
+                        <div id="paymentResponseMessage" class="col-xs-4 col-sm-3 col-md-4"></div>
+                    </div><!-- row -->
+                    <div class="row">                            
+                        <div class="col-md-6">
+                            <button id="fullMessageToggle" type="button">Show full message</button>
+                        </div>
+                        <div class="col-md-6">                                
+                            <div style="float:right;">
+                                <apex:commandButton action="{!back}" value="Back"/>
+                            </div>                                
+                        </div>
+                    </div>
+                    <div class="toggler">
+                        <div class="col-md-12">
+                            <div id="effect" >
+                                <!-- Gets full plain message received from Hosted PCI  -->
+                                <div id="message"></div>
+                            </div>
+                        </div>
+                    </div>                                                    
+                    <div class="row">
+                        <input type="hidden" id="action3DSec" name="action3DSec" value="verifyresp" class="form-control"/>
+                        <apex:inputHidden id="siteId" value="{!siteId}"/>
+                        <apex:inputHidden id="fullParentQStr" value="{!fullParentQStr}"/>
+                        <apex:inputHidden id="fullParentHost" value="{!fullParentHost}"/>
+                        <apex:inputHidden id="authTxnId"  value="{!authTxnId}" />
+                        <apex:inputHidden id="ccNum" value="{!ccNum}"/>
+                        <apex:inputHidden id="ccCVV" value="{!ccCVV}"/>
+                        <apex:inputHidden id="cardType" value="{!cardType}"/>
+                        <apex:inputHidden id="expiryMonth" value="{!expiryMonth}"/>
+                        <apex:inputHidden id="expiryYear" value="{!expiryYear}"/>
+                        <apex:inputHidden id="firstName" value="{!firstName}"/>
+                        <apex:inputHidden id="lastName" value="{!lastName}"/>
+                        <apex:inputHidden id="address1" value="{!address1}"/>
+                        <apex:inputHidden id="address2" value="{!address2}"/>
+                        <apex:inputHidden id="city" value="{!city}"/>
+                        <apex:inputHidden id="state" value="{!state}"/>
+                        <apex:inputHidden id="zip" value="{!zip}"/>
+                        <apex:inputHidden id="country" value="{!country}"/>
+                        <apex:inputHidden id="currency" value="{!hpciCurrency}"/>
+                        <apex:inputHidden id="amount" value="{!paymentAmount}"/>
+                        <apex:inputHidden id="comment" value="{!paymentComments}"/>
+                        <apex:inputHidden id="paymentProfile" value="{!paymentProfile}"/>
+                    </div>
               </fieldset>
             </fieldset>
-        </form>
+        </apex:form>
     </div>
-    <apex:form id="config">
-        <apex:inputHidden id="siteId" value="{!siteId}"/>
-        <apex:inputHidden id="fullParentQStr" value="{!fullParentQStr}"/>
-        <apex:inputHidden id="fullParentHost" value="{!fullParentHost}"/>
-        <apex:inputHidden id="authTxnId"  value="{!authTxnId}" />
-        <apex:inputHidden id="ccNum" value="{!ccNum}"/>
-        <apex:inputHidden id="ccCVV" value="{!ccCVV}"/>
-        <apex:inputHidden id="cardType" value="{!cardType}"/>
-        <apex:inputHidden id="expiryMonth" value="{!expiryMonth}"/>
-        <apex:inputHidden id="expiryYear" value="{!expiryYear}"/>
-        <apex:inputHidden id="firstName" value="{!firstName}"/>
-        <apex:inputHidden id="lastName" value="{!lastName}"/>
-        <apex:inputHidden id="address1" value="{!address1}"/>
-        <apex:inputHidden id="address2" value="{!address2}"/>
-        <apex:inputHidden id="city" value="{!city}"/>
-        <apex:inputHidden id="state" value="{!state}"/>
-        <apex:inputHidden id="zip" value="{!zip}"/>
-        <apex:inputHidden id="country" value="{!country}"/>
-        <apex:inputHidden id="currency" value="{!hpciCurrency}"/>
-        <apex:inputHidden id="amount" value="{!paymentAmount}"/>
-        <apex:inputHidden id="comment" value="{!paymentComments}"/>
-        <apex:inputHidden id="paymentProfile" value="{!paymentProfile}"/>
-  	</apex:form>
 </apex:page>

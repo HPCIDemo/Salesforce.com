@@ -127,7 +127,7 @@
     </fields>
     <fields>
         <fullName>locationName__c</fullName>
-        <defaultValue>&quot;javasample1&quot;</defaultValue>
+        <defaultValue>&quot;salesforce1&quot;</defaultValue>
         <deprecated>false</deprecated>
         <description>The Location(iframe) Name is given by HostedPCI</description>
         <externalId>false</externalId>

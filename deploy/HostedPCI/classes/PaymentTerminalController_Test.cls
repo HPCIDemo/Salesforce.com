@@ -1,7 +1,8 @@
 @isTest
 public class PaymentTerminalController_Test {
     static PageReference pageRef;
-    static PaymentTerminalController controller;    
+    static PaymentTerminalController controller;
+    static HostedPCIConfigurations__c testConf;
     
     @isTest 
     private static void init(){
@@ -42,6 +43,55 @@ public class PaymentTerminalController_Test {
         	System.assertNotEquals('', controller.LocationName);
         	System.assertNotEquals('', controller.fullParentQStr);
         	System.assertNotEquals('', controller.fullParentHost);
+        //stoptest
+		test.StopTest();        
+    }
+    
+    public static testMethod void PaymentTerminalController_PopulateData2_Test() {
+        init();
+		
+		//start the test and separate DML flow
+		test.StartTest();
+        	testConf = new HostedPCIConfigurations__c();
+            testConf.userName__c = 'test user';
+            testConf.apiType__c ='pxyhpci';
+            testConf.apiVersion__c ='1.0.1';
+            testConf.endPointAuth__c='/iSynSApp/paymentAuth.action';
+            testConf.endPointBaseUrl__c='https://apiservice.hostedpci.com/iSynSApp/paymentAuth.action/';
+            testConf.endPointCapture__c='/iSynSApp/paymentCapture.action';
+            testConf.endPointCapture__c='/iSynSApp/paymentCapture.action';
+            testConf.endPointSale__c='/iSynSApp/paymentSale.action';
+            testConf.endPointVoid__c='/iSynSApp/paymentVoid.action';
+            testConf.locationName__c='salesforce1';
+            testConf.siteId__c='528160';
+            testConf.userPassKey__c='Test password';
+            insert testConf;
+        	controller.populateData();
+        	System.assertNotEquals('', controller.SiteId);
+        	System.assertNotEquals('', controller.LocationName);
+        	System.assertNotEquals('', controller.fullParentQStr);
+        	System.assertNotEquals('', controller.fullParentHost);
+        //stoptest
+		test.StopTest();        
+    }
+    
+    public static testMethod void PaymentTerminalController_PopulateData_negative_Test() {
+        init();
+		
+		//start the test and separate DML flow
+		test.StartTest();
+        	String uniqueUserName = 'standarduser' + DateTime.now().getTime() + '@testorg.com';
+        	// This code runs as the system user
+        	Profile p = [SELECT Id FROM Profile WHERE Name='Standard User'];
+        	User newUser = new User(Alias = 'standt', Email='standarduser@testorg.com',
+       	 		EmailEncodingKey='UTF-8', LastName='Testing', LanguageLocaleKey='en_US',
+        		LocaleSidKey='en_US', ProfileId = p.Id,
+        		TimeZoneSidKey='America/Los_Angeles', UserName=uniqueUserName);
+        	
+        	System.runAs(newUser) {
+        		controller.populateData();
+        		System.assert(ApexPages.hasMessages(ApexPages.severity.FATAL));
+            }
         //stoptest
 		test.StopTest();        
     }

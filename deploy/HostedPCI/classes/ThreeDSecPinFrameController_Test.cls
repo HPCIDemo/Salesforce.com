@@ -39,5 +39,20 @@ public class ThreeDSecPinFrameController_Test {
         	System.assertNotEquals(null, fullMsg);
         //stoptest
 		test.StopTest();
-    }      
+    }
+    
+    public static testMethod void ThreeDSecPinFrameController_Back_Test(){        
+        String pageName;
+        
+        init();
+        
+        //start the test 
+		test.StartTest();        	
+        	PageReference nextPage = controller.back();        	
+        	//Check the redirection to hostedPCICheckout page
+        	pageName = nextPage.getUrl();        	
+        	System.assertEquals(true, pageName.containsIgnoreCase('paymentTerminal'));
+        //stoptest
+		test.StopTest();
+    }
 }

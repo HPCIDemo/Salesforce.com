@@ -1,12 +1,19 @@
 <apex:page sidebar="false" controller="PaymentTerminalController">
   <head>
-    <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-2.1.1.js')}"/>
+    <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-3.4.1.min.js')}"/>
     <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery.ba-postmessage.2.0.0.min.js')}"/>
-    <script src="https://ccframe.hostedpci.com/WBSStatic/site60/proxy/js/hpci-cciframe-1.0.js"></script>
+    <script src="https://ccifrm01.hostedpci.com/WBSStatic/site60/proxy/js/hpci-cciframe-1.0.js"></script>
     <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
     <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
 
     <style type="text/css">
+        html {
+          --black: #32383c;
+          --hpci-font-size: 1.5rem;
+        }
+      	body {
+        	font-size: var(--hpci-font-size);
+        }
         fieldset {
             font-family: sans-serif;
             border: 5px solid #1F497D;
@@ -30,15 +37,55 @@
             float: none;
             margin: 0 auto;
         }
-        input[type="text"], select {
-            -webkit-box-sizing: border-box;
-            -moz-box-sizing: border-box;
-            box-sizing: border-box;
-            border: 2px #cccccc solid;
-            border-radius: 4px;
+      	.embed-responsive.embed-responsive-8by1 {
+            padding-bottom: 12%;
         }
+        @media screen and (max-width: 600px) {
+          .embed-responsive.embed-responsive-8by1 {
+          	padding-bottom: 20%;
+          }
+        }
+      	.row {
+            display: flex;
+            margin-top: 3px;
+        }
+      	.row label {
+            flex-basis: 40%;
+            font-size: var(--hpci-font-size);
+            padding: 10px 6px;
+        }
+      	.row select {
+            flex-basis: 60%;            
+            padding: 0.1em 0 0.1em 0;
+        }
+        .row input {            
+            padding: .5em;
+            flex-basis: 60%;
+            font-size: 1.2em;
+            height: 1.8em;
+        }
+        .row input[type="text"], select{
+          padding: 5px 6px;
+          font-size: var(--hpci-font-size);
+          color: var(--black);
+          background-color: #fff;
+          border: 1px solid #597183;
+          border-radius: 0.15rem 0.50rem 0.30rem;
+          margin-top: 4px;
+          width: 100%;
+          transition: all 0.3s ease;
+		  resize: vertical;
+		  height: 40px;
+        }        
+        .row input[type="text"]:focus , select:focus{
+          outline: none;
+          box-shadow: 0 0 0 4px rgba(21, 156, 228, 0.4);
+        }      	
         input[type="text"]:hover, select:hover{
             background-color: #ddddff;
+        }      
+        fieldset button {
+        	font-size: 1.5rem;
         }
       	button:hover{
             border: 1px #428BCA solid;
@@ -59,15 +106,21 @@
           display:none;
         }
         #message{
-            word-wrap: break-word;
-            max-width: 823px;
+            word-break: break-all;
             border-radius: 4px;
             background-color: #F8F8F8;
             margin-top: 10px;
+      		font-size: var(--hpci-font-size);
         }
 		.trSummary, .ccInfo{
 			display:none;
 		}
+        #trSummary label, #trSummary div.row > div:nth-child(2) {
+        	padding: 10px 6px;
+        }
+        #trSummary label {
+            float: right !important;
+        }
     </style>
     <script type="text/javascript">
        // Initiate processPayment function on processPaymentButton click
@@ -110,18 +163,31 @@
                             jQuery('#trSummary').removeClass("trSummary");
                         }
                         jQuery('#message').text(resultMap['fullMsg']);
-                        jQuery('#paymentStatus').text(resultMap['pxyResponse.responseStatus']);
-                        jQuery('#referenceId').text(resultMap['pxyResponse.processorRefId']);
-                        jQuery('#paymentResponseCode').text(resultMap['pxyResponse.responseStatus.code']);
+                        
+                        var status = resultMap['status'];
+                        var processorRefId = resultMap['pxyResponse.processorRefId'];
+                        var pesponseCode = resultMap['pxyResponse.responseStatus.code'];
+                        var description = resultMap['pxyResponse.responseStatus.description'];
+                        var errId = resultMap['errId'];
+                        var errParamValue = resultMap['errParamValue'];
+                        
+                        if (errId)
+                            pesponseCode = errId;
+                        
+                        if (errParamValue)
+                            description = errParamValue;
+                        
+                        jQuery('#paymentStatus').text(status);                                                
+                        jQuery('#referenceId').text(processorRefId);
+                        jQuery('#paymentResponseCode').text(pesponseCode);
                         // Replace "+" in the string with "
-                        jQuery('#paymentResponseMessage').text(
-                                (resultMap['pxyResponse.responseStatus.description']).replace(/\+/g, ' '));
+                        jQuery('#paymentResponseMessage').text((description).replace(/\+/g, ' '));
                     },
                     {escape:true}
                 );
         }// End of processPayment
 
-      	var hpciCCFrameHost = "https://ccframe.hostedpci.com";
+      	var hpciCCFrameHost = "https://ccifrm01.hostedpci.com";
         var hpciCCFrameFullUrl = "";
         var hpciCCFrameName = "ccframe"; // use the name of the frame containing the credit card
 
@@ -173,10 +239,28 @@
             // Adapt the following message / action to match your required experience
             alert("Received preliminary CVV details");
         }
+        
+        function createExpDateOptions() {
+            var d = new Date();
+            var yyyy = d.getFullYear();
+            for(var i = yyyy; i < yyyy + 10; i++) {
+                var o = document.createElement("option");
+                o.value = i;
+                o.appendChild(document.createTextNode(i));
+                if((yyyy + 3) == i) {
+                    o.selected = "selected";
+                }
+                
+                if (document.getElementById("expiryYear")) {
+                    var expiryYearInput  = document.getElementById("expiryYear")
+                    expiryYearInput.appendChild(o);
+                }
+            }
+        }
 
         jQuery(document).ready(function() {
             var firstLoad = true;
-            var counter=0;
+            var counter=0;                       
             
             //Initialize configuration data
             if(firstLoad){               
@@ -191,7 +275,8 @@
                     jQuery('#ccInfo').removeClass("ccInfo");
                     firstLoad = false;
                     clearInterval(iframeLoadId);
-                 	}
+                    createExpDateOptions();
+               }
                if(counter>60000){
                    firstLoad = false;
                    clearInterval(iframeLoadId);
@@ -220,65 +305,65 @@
                   <legend>Personal Information</legend>
                   <div class="row">
                       <div class="col-xs-4 col-sm-3 col-md-4">
-                          <label>First Name:</label>
+                          <label>First Name</label>
                       </div>
-                      <div class="col-xs-4 col-sm-3 col-md-5">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
                           <input id="firstName" type="text" name="firstName"></input>
                       </div>
                   </div>
                   <div class="row">
                       <div class="col-xs-4 col-sm-3 col-md-4">
-                          <label>Last Name:</label>
+                          <label>Last Name</label>
                       </div>
-                      <div class="col-xs-4 col-sm-3 col-md-5">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
                           <input id="lastName" type="text" name="lastName"></input>
                       </div>
                   </div>
                   <div class="row">
                       <div class="col-xs-4 col-sm-3 col-md-4">
-                          <label>Address Line 1:</label>
+                          <label>Address Line 1</label>
                       </div>
-                      <div class="col-xs-4 col-sm-3 col-md-5">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
                           <input id="address1" type="text" name="address1"></input>
                       </div>
                   </div>
                   <div class="row">
                       <div class="col-xs-4 col-sm-3 col-md-4">
-                          <label>Address Line 2:</label>
+                          <label>Address Line 2</label>
                       </div>
-                      <div class="col-xs-4 col-sm-3 col-md-5">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
                           <input id="address2" type="text" name="address2"></input>
                       </div>
                   </div>
                   <div class="row">
                       <div class="col-xs-4 col-sm-3 col-md-4">
-                          <label>City:</label>
+                          <label>City</label>
                       </div>
-                      <div class="col-xs-4 col-sm-3 col-md-5">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
                           <input id="city" type="text" name="city"></input>
                       </div>
                    </div>
                    <div class="row">
                    		<div class="col-xs-4 col-sm-3 col-md-4">
-                           <label>State / Province:</label>
+                           <label>State / Province</label>
                         </div>
-                        <div class="col-xs-4 col-sm-3 col-md-5">
+                        <div class="col-xs-4 col-sm-3 col-md-4">
                            <input id="state" type="text" name="state"></input>
                         </div>
                    </div>
                    <div class="row">
                      	<div class="col-xs-4 col-sm-3 col-md-4">
-                           <label>Zip / Postal Code:</label>
+                           <label>Zip / Postal Code</label>
                         </div>
-                        <div class="col-xs-4 col-sm-3 col-md-5">
+                        <div class="col-xs-4 col-sm-3 col-md-4">
                            <input id="zip" type="text" name="zip"></input>
                         </div>
                    </div>
                    <div class="row">
                       <div class="col-xs-4 col-sm-3 col-md-4">
-                         <label>Country:</label>
+                         <label>Country</label>
                       </div>
-                      <div class="col-xs-4 col-sm-3 col-md-5">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
                          <select id="country" name="country">
                             	<option value="CAN">Canada</option>
                                 <option value="US">United States</option>
@@ -287,17 +372,17 @@
                    </div>
                    <div class="row">
                       <div class="col-xs-4 col-sm-3 col-md-4">
-                         <label>Payment Comments:</label>
+                         <label>Payment Comments</label>
                       </div>
-                      <div class="col-xs-4 col-sm-3 col-md-5">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
                          <input id="comment" type="text" name="comment"></input>
                       </div>
                    </div>
                    <div class="row">
                           <div class="col-xs-4 col-sm-3 col-md-4">
-                              <label>Currency:</label>
+                              <label>Currency</label>
                           </div>
-                          <div class="col-xs-4 col-sm-3 col-md-5">
+                          <div class="col-xs-4 col-sm-3 col-md-4">
                               <select id="currency" name="currency">
                                   <option value="CAD">Canadian Dollar</option>
                                   <option value="USD">US Dollar</option>
@@ -306,17 +391,17 @@
                       </div>
                       <div class="row">
                           <div class="col-xs-4 col-sm-3 col-md-4">
-                              <label>Payment Amount:</label>
+                              <label>Payment Amount</label>
                           </div>
-                          <div class="col-xs-4 col-sm-3 col-md-5">
+                          <div class="col-xs-4 col-sm-3 col-md-4">
                               <input id="amount" type="text" name="amount"></input>
                            </div>
                       </div>
                       <div class="row">
                           <div class="col-xs-4 col-sm-3 col-md-4">
-                              <label>Payment Profile:</label>
+                              <label>Payment Profile</label>
                           </div>
-                          <div class="col-xs-4 col-sm-3 col-md-5">
+                          <div class="col-xs-4 col-sm-3 col-md-4">
                               <select id="paymentProfile" name="paymentProfile">
                                   <option value="DEF">DEF - Currency: USD</option>
                                   <option value="DEF_MONERIS">DEF_MONERIS - Currency: CAD</option>
@@ -336,8 +421,6 @@
                             <!-- Select credit card -->
                             <label for="cardType">Card Type</label>
                       </div>
-                  </div><!-- row -->
-                  <div class="row">
                       <div class="col-xs-4 col-sm-3 col-md-4">
                              <!-- id is used in HostedPCIMsg page -->
                              <select id="cardType" name="cardType" class="selectpicker">
@@ -346,12 +429,11 @@
                                  <option value="amex">American Express</option>
                              </select>
                       </div>
-                  </div><!-- row -->
+                  </div>
                   <!-- iframe -->
-                  <div class="row">
-                      <iframe id="ccframe"  name="ccframe" onload="receiveHPCIMsg()" src=""
-                      style="border:none; height:61px;">
-                            If you can see this, your browser doesn't understand IFRAME.
+                  <div class="row embed-responsive embed-responsive-8by1">
+                      <iframe id="ccframe"  name="ccframe" onload="receiveHPCIMsg()" src="">
+                   			If you can see this, your browser doesn't understand IFRAME.
                       </iframe>
                   </div><!-- row -->
                   <!-- Input row (exp, month, cvv) -->
@@ -379,65 +461,52 @@
                               <option value="12">12 - December</option>
                           </select>
                       </div>
-                      <div class="col-xs-4 col-sm-3 col-md-5">
+                      <div class="col-xs-4 col-sm-3 col-md-4">
                       <!-- id is used in HostedPCIMsg page -->
                           <select id="expiryYear" name="expiryYear" class="selectpicker">                              
-                              <option value="16">2016</option>
-                              <option value="17">2017</option>
-                              <option value="18">2018</option>
-                              <option value="19">2019</option>
-                              <option value="20">2020</option>
-                              <option value="21">2021</option>
-                              <option value="22">2022</option>
-                              <option value="23">2023</option>
-                              <option value="24">2024</option>
-                              <option value="25">2025</option>
-                              <option value="26">2026</option>
                           </select>
                       </div>
                       <br/>
                       <br/>                      
                   </div><!-- row -->
                   <div class="row">                                                                                                            
-                      <div class="col-xs-3 col-sm-6 col-md-6">
+                      <div class="col-xs-3 col-sm-6 col-md-4">
                       		<!-- Submit button -->
                             <button type="button" value="Submit"                                        
                                     id="processPaymentButton" onClick='sendHPCIMsg()'>Process Payment</button>
                       </div>
-                      <div class="col-xs-2 col-sm-6 col-md-6" >
-                            <div style="float:right;">
-                            	<!-- Reset button -->
-                                <button id="paymentResetButton" type="button"  value="Reset Payment" 
-                                    >Reset Payment</button><br />
-                            </div>
+                      <div class="col-xs-2 col-sm-6 col-md-4" >
+                      		<!-- Reset button -->
+                            <button id="paymentResetButton" class="pull-right" type="button"  value="Reset Payment" 
+                            >Reset Payment</button><br />
                       </div>                      			
                   </div>
               </fieldset>
 			  <fieldset id="trSummary" class="trSummary">
                         <legend>Transaction Summary</legend>
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-xs-4 col-sm-3 col-md-4">                            
                                 <label>Payment Status: </label>
-                                <div id="paymentStatus" style="word-wrap: break-word;"></div><br />
                             </div>
+                            <div id="paymentStatus" class="col-xs-4 col-sm-3 col-md-4"></div>
                         </div><!-- row -->
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
                                 <label>Reference ID: </label>
-                                <div id="referenceId" style="word-wrap: break-word;"></div><br />
                             </div>
+                            <div id="referenceId" class="col-xs-4 col-sm-3 col-md-4"></div>
                         </div><!-- row -->
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
                                 <label>Response Code: </label>
-                                <div id="paymentResponseCode" style="word-wrap: break-word;"></div><br />
                             </div>
+                            <div id="paymentResponseCode" class="col-xs-4 col-sm-3 col-md-4"></div>
                         </div><!-- row -->
                         <div class="row">
-                            <div class="col-md-8">
+                            <div class="col-xs-4 col-sm-3 col-md-4">
                                 <label>Response Message: </label>
-                                <div id="paymentResponseMessage" style="word-wrap: break-word;"></div><br />
                             </div>
+                            <div id="paymentResponseMessage" class="col-xs-4 col-sm-3 col-md-4"></div>
                         </div><!-- row -->
                         <div class="row">
                             <div class="col-md-12">

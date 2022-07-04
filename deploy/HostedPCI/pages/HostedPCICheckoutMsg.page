@@ -18,9 +18,24 @@
             }
             .apexp{
                   padding: 10px;
-                  margin : auto;
-                  max-width: 823px;              
-            }        
+                  margin : auto; 
+    			  width: 58%;            
+            }  
+            @media (min-width: 1200px) {
+                .apexp {
+                    width: 1170px;
+                }
+            }
+            @media (min-width: 992px) {
+                .apexp {
+                    width: 970px;
+                }
+            }
+            @media (min-width: 768px) {
+                .apexp {
+                    width: 750px;
+                } 
+            }
             body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock  { 
                 border: 6px solid #1F497D;;
                 background: #DDD ;
@@ -35,10 +50,16 @@
             #effect{
                 word-wrap: break-word;
             }        
-           .toggler{
-              display:none;
-              margin-top: 10px;
-          } 
+            .toggler{
+            	display:none;
+              	margin-top: 10px;
+            }
+            td label,td span {
+            	margin-bottom: 0px;
+            }
+            td, th {
+            	padding: 8px;
+            }
         </style>   
     </head>
     <body>

@@ -2,7 +2,6 @@
 <CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
     <description>HostedPci connection settings description</description>
     <label>HostedPCI Settings</label>
-    <mobileReady>false</mobileReady>
     <motif>Custom67: Gears</motif>
     <page>HostedPCISettings</page>
 </CustomTab>

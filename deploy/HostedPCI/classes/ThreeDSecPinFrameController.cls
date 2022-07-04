@@ -62,8 +62,10 @@ public with sharing class ThreeDSecPinFrameController {
         hpciRequestParamMap.put('pxyCreditCard.cardCodeVerification', cvvToken);
         hpciRequestParamMap.put('pxyTransaction.txnAmount', paymentAmount);
         hpciRequestParamMap.put('pxyTransaction.txnCurISO', hpciCurrency);
-        DateTime timeStamp = DateTime.now();
-        String merchantRefId = String.valueOf(timeStamp.millisecond()+ 1000000);
+        
+        String merchantRefId = String.valueOf(System.currentTimeMillis());
+        hpciRequestParamMap.put('pxyTransaction.merchantRefId',merchantRefId);
+        
         hpciRequestParamMap.put('pxyTransaction.merchantRefId',merchantRefId);
         hpciRequestParamMap.put('pxyTransaction.txnPayName', paymentProfile);
         hpciRequestParamMap.put('pxyTransaction.txnComment', paymentComments);
@@ -94,7 +96,6 @@ public with sharing class ThreeDSecPinFrameController {
         hostedPciMsgMap.put('fullMsg',hostedPciMsg);
 
         return hostedPciMsgMap;
-
     }
 
     public static void SaveTransaction(String ccNum, String cardType, String firstName, String lastName,
@@ -126,11 +127,11 @@ public with sharing class ThreeDSecPinFrameController {
             // populated with an ID.
             ID newTokenID = newToken.ID;
 
-            DateTime timeStamp = DateTime.now();
-            if(processorRefId == '0'){
-                newPayment.Name = String.valueOf(timeStamp.millisecond());
+            if(processorRefId == '0' || String.isBlank(processorRefId)){
+                processorRefId = '';
+                newPayment.Name = String.valueOf(System.currentTimeMillis());
             }else{
-                newPayment.Name = processorRefId + '-' + String.valueOf(timeStamp.millisecond());
+                newPayment.Name = processorRefId + '-' + String.valueOf(System.currentTimeMillis());
             }
 
             newPayment.address1__c = address1;
@@ -163,6 +164,7 @@ public with sharing class ThreeDSecPinFrameController {
 
     public PageReference back(){
         PageReference pageRef = Page.PaymentTerminal;
+        pageRef.setRedirect(true);
         return pageRef;
     }
 

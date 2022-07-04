@@ -10,7 +10,7 @@ public with sharing class HostedPCISettingsController {
     public String newValue{get;set;}
     HostedPCIConfigurations__c hostedPciSet;
 
-    public HostedPCISettingsController(){
+    public HostedPCISettingsController() {
         hostedPciSet = HostedPCIConfigurations__c.getInstance();
         userName = hostedPciSet.userName__c;
         userPassKey = hostedPciSet.userPassKey__c;
@@ -19,28 +19,35 @@ public with sharing class HostedPCISettingsController {
         locationName = hostedPciSet.locationName__c;
     }
 
-    public string getUserName(){
+    public string getUserName() {
+        hostedPciSet = HostedPCIConfigurations__c.getInstance();
+        userName = hostedPciSet.userName__c;
 		List<String> UserNameList = new List<String>();
         String user;
 
-        for( integer i =0; i<userName.length();i++)
+        for( integer i =0; i < userName.length(); i++)
             UserNameList.add('*');
         user = string.join(UserNameList,'');
 
         return user;
     }
-    private void setUserName(){
-        if(newValue.length()>0 &&(userName!=newValue)){
+    
+    private void setUserName() {
+        hostedPciSet = HostedPCIConfigurations__c.getInstance();
+        userName = hostedPciSet.userName__c;
+        if (!String.isBlank(newValue) && !userName.equals(newValue)) {
             try{
-                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getOrgDefaults();
-                hostedPciConf.userName__c = newValue;
-                //Check if the user has create access
-                if (!Schema.sObjectType.HostedPCIConfigurations__c.isUpdateable()){
+                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getInstance(System.UserInfo.getUserId());                
+                //Check if the user has access
+                if (!Schema.sObjectType.HostedPCIConfigurations__c.fields.userName__c.isUpdateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.userName__c.isCreateable()){
                     ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
 	                                                    'Insufficient access'));
 	      			return;
 			    }
-                update hostedPciConf;
+                hostedPciConf.userName__c = newValue;
+                upsert hostedPciConf;
+                
                 userName = newValue;
                 userPassKey = hostedPciConf.userPassKey__c;
             }catch (DmlException e) {
@@ -48,31 +55,38 @@ public with sharing class HostedPCISettingsController {
                 ApexPages.addMessages(e);
             }
         }
-
     }
 
-    public string getUserPassKey(){
+    public string getUserPassKey() {
+        hostedPciSet = HostedPCIConfigurations__c.getInstance();
+        userPassKey = hostedPciSet.userPassKey__c;
         List<String> UserPassList = new List<String>();
         String userPass;
 
-        for( integer i =0; i<userPassKey.length();i++)
+        for( integer i = 0; i < userPassKey.length(); i++)
             UserPassList.add('*');
         userPass = string.join(UserPassList,'');
 
         return userPass;
     }
+    
     private void setUserPassKey(){
-        if(newValue.length()>0 &&(userName!=newValue)){
+        hostedPciSet = HostedPCIConfigurations__c.getInstance();
+        userPassKey = hostedPciSet.userPassKey__c;
+        if (!String.isBlank(newValue) && !userPassKey.equals(newValue)) {
             try{
-                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getOrgDefaults();
-                hostedPciConf.userPassKey__c = newValue;
-                //Check if the user has create access
-                if (!Schema.sObjectType.HostedPCIConfigurations__c.isUpdateable()){
+                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getInstance(System.UserInfo.getUserId());
+                
+                //Check if the user has access
+                if (!Schema.sObjectType.HostedPCIConfigurations__c.fields.userPassKey__c.isUpdateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.userPassKey__c.isCreateable()){
                     ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
 	                                                    'Insufficient access'));
 	      			return;
 			    }
-                update hostedPciConf;
+                hostedPciConf.userPassKey__c = newValue;
+                upsert hostedPciConf;
+                
                 userPassKey = newValue;
                 userName = hostedPciConf.userName__c;
             }catch (DmlException e) {
@@ -85,17 +99,23 @@ public with sharing class HostedPCISettingsController {
     public string getEndPointBaseUrl(){
         return endPointBaseUrl;
     }
+    
     private void setEndPointBaseUrl(){
-        if(newValue.length()>0 &&(userName!=newValue)){
+        hostedPciSet = HostedPCIConfigurations__c.getInstance();
+        endPointBaseUrl = hostedPciSet.endPointBaseUrl__c;
+        if (!String.isBlank(newValue) && !endPointBaseUrl.equals(newValue)) {
             try{
-                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getOrgDefaults();
-                hostedPciConf.endPointBaseUrl__c = newValue;
-                if (!Schema.sObjectType.HostedPCIConfigurations__c.isUpdateable()){
+                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getInstance(System.UserInfo.getUserId());
+                
+                if (!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointBaseUrl__c.isUpdateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointBaseUrl__c.isCreateable()){
                     ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
 	                                                    'Insufficient access'));
 	      			return;
 			    }
-                update hostedPciConf;
+                hostedPciConf.endPointBaseUrl__c = newValue;
+                upsert hostedPciConf;
+                
                 endPointBaseUrl = newValue;
             }catch (DmlException e) {
                 System.debug(e.getMessage());
@@ -107,17 +127,23 @@ public with sharing class HostedPCISettingsController {
     public string getSiteId(){
         return siteId;
     }
-    private void setSiteId(){
-       if(newValue.length()>0 &&(userName!=newValue)){
+    
+    private void setSiteId() {
+       hostedPciSet = HostedPCIConfigurations__c.getInstance();
+       siteId = hostedPciSet.siteId__c;
+       if (!String.isBlank(newValue) && !siteId.equals(newValue)) {
             try{
-                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getOrgDefaults();
-                hostedPciConf.siteId__c = newValue;
-                if (!Schema.sObjectType.HostedPCIConfigurations__c.isUpdateable()){
+                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getInstance(System.UserInfo.getUserId());
+                
+                if (!Schema.sObjectType.HostedPCIConfigurations__c.fields.siteId__c.isUpdateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.siteId__c.isCreateable()){
                     ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
 	                                                    'Insufficient access'));
 	      			return;
 			    }
-                update hostedPciConf;
+                hostedPciConf.siteId__c = newValue;
+                upsert hostedPciConf;
+                
                 siteId = newValue;
             }catch (DmlException e) {
                 System.debug(e.getMessage());
@@ -126,20 +152,26 @@ public with sharing class HostedPCISettingsController {
         }
     }
 
-    public string getLocationName(){
+    public string getLocationName() {
         return locationName;
     }
-    private void setLocationName(){
-        if(newValue.length()>0 &&(userName!=newValue)){
+    
+    private void setLocationName() {
+        hostedPciSet = HostedPCIConfigurations__c.getInstance();
+        locationName = hostedPciSet.locationName__c;
+        if (!String.isBlank(newValue) && !locationName.equals(newValue)) {
             try{
-                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getOrgDefaults();
-                hostedPciConf.locationName__c = newValue;
-                if (!Schema.sObjectType.HostedPCIConfigurations__c.isUpdateable()){
+                HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getInstance(System.UserInfo.getUserId());
+                
+                if (!Schema.sObjectType.HostedPCIConfigurations__c.fields.locationName__c.isUpdateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.locationName__c.isCreateable()) {
                     ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
 	                                                    'Insufficient access'));
 	      			return;
 			    }
-                update hostedPciConf;
+                hostedPciConf.locationName__c = newValue;
+                upsert hostedPciConf;
+                
                 locationName = newValue;
             }catch (DmlException e) {
                 System.debug(e.getMessage());
@@ -148,14 +180,15 @@ public with sharing class HostedPCISettingsController {
         }
     }
 
-    public void setModalTitle(String newModalTitle){
+    public void setModalTitle(String newModalTitle) {
         modalTitle = newModalTitle;
     }
-    public String getModalTitle(){
+    
+    public String getModalTitle() {
         return 'Edit mode: ' + modalTitle ;
     }
 
-    public PageReference save(){
+    public PageReference save() {
         if(buttonId=='userName')
             setUserName();
         if(buttonId=='userPassKey')
@@ -168,12 +201,15 @@ public with sharing class HostedPCISettingsController {
             setLocationName();
         displayPopup = false;
         newValue='';
+        
         return null;
     }
+    
     public void closePopup() {
         newValue='';
         displayPopup = false;
     }
+    
     public void showPopup() {
         setModalTitle(buttonId);
         displayPopup = true;

@@ -1,15 +1,15 @@
-<apex:page doctype="html-5.0" showheader="false" applyHtmlTag="false" controller="HostedPCICheckoutController" standardStyleSheets="false">
-    <html>
+<apex:page doctype="html-5.0" showheader="false" cache="false" 
+           controller="HostedPCICheckoutController">
         <head>
             <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>            
-            <apex:includescript value="https://code.jquery.com/jquery-2.2.3.min.js" />
+        	<apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery-3.4.1.min.js')}"/>
             <apex:includeScript value="{!URLFOR($Resource.HPCI_Javascript, 'jquery.ba-postmessage.2.0.0.min.js')}"/>
-            <apex:includescript value="https://ccframe.hostedpci.com/WBSStatic/site60/proxy/js/hpci-cciframe-1.0.js"/>          
+            <apex:includescript value="https://ccifrm01.hostedpci.com/WBSStatic/site60/proxy/js/hpci-cciframe-1.0.js"/>          
             <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap.min.css')}"/>
             <apex:stylesheet value="{!URLFOR($Resource.Bootstrap_3_2_0, 'bootstrap-theme.min.css')}"/>
             
             <script>              
-                var hpciCCFrameHost = "https://ccframe.hostedpci.com";
+                var hpciCCFrameHost = "https://ccifrm01.hostedpci.com";
                 var hpciCCFrameFullUrl = "";
                 var hpciCCFrameName = "ccframe"; // use the name of the frame containing the credit card
                 
@@ -21,26 +21,26 @@
                 
                 var hpciSiteSuccessHandlerV2 = function(mappedCCValue, mappedCVVValue, ccBINValue) {
                     // Please pass the values to the document input and then submit the form
-        
+                
                     // No errors from iframe so hide the errorMessage div
                     document.getElementById('errorMessage').style.display = 'none';
                     // Name of the input (hidden) field required by ecommerce site
                     // Typically this is a hidden input field.
-                    var ccNumInput = document.getElementById("{!$Component.CCAcceptForm.ccNum}");
+                    var ccNumInput = document.getElementById("ccNum");
                     ccNumInput.value = mappedCCValue;
-        
+                    
                     // name of the input (hidden) field required by ecommerce site
                     // Typically this is a hidden input field.
-                    var ccCVVInput = document.getElementById("{!$Component.CCAcceptForm.ccCVV}");
+                    var ccCVVInput = document.getElementById("ccCVV");
                     ccCVVInput.value = mappedCVVValue;
-        
+                    
                     // name of the input (hidden) field required by ecommerce site
                     // Typically this is a hidden input field.
-                    var ccBINInput = document.getElementById("{!$Component.CCAcceptForm.ccBIN}");
+                    var ccBINInput = document.getElementById("ccBIN");
                     ccBINInput.value = ccBINValue;
-        
+                    
                     //Submit the form
-                    processPayment();                    
+                    processPayment();             
                 }
                 
                 var hpci3DSitePINSuccessHandler = function() {
@@ -51,56 +51,78 @@
 
                 var hpci3DSitePINErrorHandler = function() {
                     // Adapt the following message / action to match your required experience
-                    alert("Could not verify PIN for the credit card");
+                    //alert("Could not verify PIN for the credit card");
                 }
 
                 var hpciCCPreliminarySuccessHandler = function(hpciCCTypeValue, hpciCCBINValue, hpciCCValidValue, hpciCCLengthValue) {
                     // Adapt the following message / action to match your required experience
-                    alert("Received preliminary credit card details");
+                    //alert("Received preliminary credit card details");
                 }
 
                 var hpciCVVPreliminarySuccessHandler = function(hpciCVVLengthValue) {
                     // Adapt the following message / action to match your required experience
-                    alert("Received preliminary CVV details");
+                    //alert("Received preliminary CVV details");
                 }
 
             </script>
             <script type="text/javascript">
-                $(document).ready(function() {
+        		function createExpDateOptions() {
+                    var d = new Date();
+                    var yyyy = d.getFullYear();
+                    for(var i = yyyy; i < yyyy + 10; i++) {
+                        var o = document.createElement("option");
+                        o.value = i;
+                        o.appendChild(document.createTextNode(i));
+                        if((yyyy + 3) == i) {
+                            o.selected = "selected";
+                        }
+                        
+                        if (document.getElementById("expiryYear")) {
+                            var expiryYearInput = document.getElementById("expiryYear");
+                            expiryYearInput.appendChild(o);
+                        }
+                    }
+                }
+        
+        		$(document).ready(function() {
                     var firstLoad = true;
-                    var counter=0;
-                    //3DSec required parameter
-                    document.getElementById("{!$Component.CCAcceptForm.action3DSec}").value = "verifyenroll";
-                    
+                    var counter=0;                
+                
                     //Initialize configuration data
                     if(firstLoad){
-                       var iframeLoadId = setInterval(function(){
-                       populateData();
-                       counter +=300;
-                       
-                       if(document.getElementById("{!$Component.CCAcceptForm.iFrameSrc}"))
-                   	   		hpciCCFrameFullUrl = document.getElementById("{!$Component.CCAcceptForm.iFrameSrc}").value;                           
-                       if(hpciCCFrameFullUrl.length > 0){
-                            document.getElementById("ccframe").src=hpciCCFrameFullUrl;
-                            jQuery('#ccInfo').removeClass("ccInfo");
-                            firstLoad = false;
-                            clearInterval(iframeLoadId);
+                        var iframeLoadId = setInterval(function(){
+                            populateData();
+                            counter +=300;
+                            
+                            if(document.getElementById("{!$Component.CCAcceptForm.iFrameSrc}"))
+                                hpciCCFrameFullUrl = document.getElementById("{!$Component.CCAcceptForm.iFrameSrc}").value;                           
+                            if(hpciCCFrameFullUrl.length > 0){
+                                document.getElementById("ccframe").src=hpciCCFrameFullUrl;
+                                jQuery('#ccInfo').removeClass("ccInfo");
+                                firstLoad = false;
+                                clearInterval(iframeLoadId);
+                                createExpDateOptions();
                             }
-                       if(counter>60000){
-                           	   firstLoad = false;
-                               clearInterval(iframeLoadId);
-                           }
+                            if(counter>60000){
+                                firstLoad = false;
+                                clearInterval(iframeLoadId);
+                            }
                         }, 300);
-                     }
+                    }
+                    
                     $("#paymentResetButton").click(function () {
                         document.getElementById("{!$Component.CCAcceptForm}").reset();
                         document.getElementById("ccframe").src = document.getElementById("ccframe").src;
                     });
                     //Set the hostedPCI iframe "src" attribute
                     document.getElementById("ccframe").src=hpciCCFrameFullUrl;
-                });
-            </script>
+            });
+        	</script>
             <style type="text/css">
+                html {
+                  --black: #32383c;
+                  --hpci-font-size: 1.5rem;
+                }
                 body {
                      background:linear-gradient(white, #2A94D6)fixed;
                 }
@@ -110,6 +132,14 @@
                 .col-centered {
                     float: none;
                     margin: 0 auto;
+                }
+                .embed-responsive.embed-responsive-8by1 {
+                    padding-bottom: 12%;
+                }
+                @media screen and (max-width: 600px) {
+                  .embed-responsive.embed-responsive-8by1 {
+                    padding-bottom: 20%;
+                  }
                 }
                 fieldset {
                     font-family: sans-serif;
@@ -131,21 +161,50 @@
                     width: auto;
                 }
                 .row {
-                    margin-top: 5px;
-                    margin-bottom: 5px;
+                    display: flex;
+                    margin-top: 3px;
+                }
+                .row label {
+                    flex-basis: 40%;
+                    font-size: var(--hpci-font-size);
+                    padding: 10px 6px;
+                }
+                .row select {
+                    flex-basis: 60%;            
+                    padding: 0.1em 0 0.1em 0;
+                }
+                .row input {            
+                    padding: .5em;
+                    flex-basis: 60%;
+                    font-size: 1.2em;
+                    height: 1.8em;
+                }
+                select[size] {
+                	height: 40px;
+                }
+                .row input[type="text"], select{
+                  padding: 5px 6px;
+                  font-size: var(--hpci-font-size);
+                  color: var(--black);
+                  background-color: #fff;
+                  border: 1px solid #597183;
+                  border-radius: 0.15rem 0.50rem 0.30rem;
+                  margin-top: 4px;
+                  width: 100%;
+                  transition: all 0.3s ease;
+                  resize: vertical;
+                  height: 40px;
+                }        
+                .row input[type="text"]:focus , select:focus{
+                  outline: none;
+                  box-shadow: 0 0 0 4px rgba(21, 156, 228, 0.4);
+                }
+                input[type="text"]:hover, select:hover{
+                    background-color: #ddddff;
                 }
                 .ccInfo{
                     display:none;
-                }
-                select {
-                    padding: 4px 0px;
-                    border: none;
-                    border-radius: 4px; 
-                }
-                input[type=text] {
-                    border: none;
-                    border-radius: 4px; 
-                }
+                }               
                 button:hover{
                     border: 1px #428BCA solid;
                     box-shadow: 5px 5px 3px 0px gray;
@@ -169,165 +228,203 @@
                 }
             </style>
         </head>        
-        <body>
-           <div class="container">
-                <div class = "col-md-7 col-centered">
-                    <apex:form id="CCAcceptForm">
+		<div class="container">
+            <div class = "col-md-12 col-centered">
+                <apex:form id="CCAcceptForm">
+                    <fieldset>
+                        <legend>Web Checkout</legend>
+                        <!-- Error message for invalid credit card -->
+                        <div id="errorMessage" style="display:none;color:red"><label>Invalid card number, try again</label><br/></div>                        
                         <fieldset>
-                            <legend>Web Checkout</legend>
-                            <!-- Error message for invalid credit card -->
-                            <div id="errorMessage" style="display:none;color:red"><label>Invalid card number, try again</label><br/></div>                        
-                            <fieldset>
-                                <legend>Personal Information</legend>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="firstName" value="First Name:" />
-                                    <apex:input value="{!firstName}" id="firstName" styleClass="col-xs-4 col-sm-3 col-md-4"/>
+                            <legend>Personal Information</legend>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel styleClass="control-label" for="firstName" value="First Name" />
                                 </div>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="lastName" value="Last Name:" />
-                                    <apex:input value="{!lastName}" id="lastName" styleClass="col-xs-4 col-sm-3 col-md-4"/>
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <input id="firstName" type="text" name="firstName"></input>
+                            	</div>
+                        	</div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="lastName" value="Last Name" />
                                 </div>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="address1" value="Address Line 1:" />
-                                    <apex:input value="{!address1}" id="address1" styleClass="col-xs-4 col-sm-3 col-md-4"/>
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <input id="lastName" type="text" name="lastName"></input>
+                            	</div>
+                    		</div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="address1" value="Address Line 1" />
                                 </div>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="address2" value="Address Line 2:" />
-                                    <apex:input value="{!address2}" id="address2" styleClass="col-xs-4 col-sm-3 col-md-4"/>
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <input id="address1" type="text" name="address1"></input>
+                            	</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="address2" value="Address Line 2" />
                                 </div>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="city" value="City:" />
-                                    <apex:input value="{!city}" id="city" styleClass="col-xs-4 col-sm-3 col-md-4"/>
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <input id="address2" type="text" name="address2"></input>
+                            	</div>
+                        	</div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="city" value="City" />
                                 </div>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="state" value="State / Province:" />
-                                    <apex:input value="{!state}" id="state" styleClass="col-xs-4 col-sm-3 col-md-4"/>
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <input id="city" type="text" name="city"></input>
+                            	</div>
+            				</div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="state" value="State / Province"/>
                                 </div>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="zip" value="Zip / Postal Code:" />
-                                    <apex:input value="{!zip}" id="zip" styleClass="col-xs-4 col-sm-3 col-md-4"/>
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <input id="state" type="text" name="state"></input>
+                            	</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="zip" value="Zip / Postal Code"/>
                                 </div>
-                                <div class="control-group row">                                                                    
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="country" value="Country:" />                                    
-                                    <apex:selectList size="1" value="{!country}" id="country" styleClass="col-xs-4 col-sm-3 col-md-4">
-                                        <apex:selectOption itemValue="CAD" itemLabel="Canada"/>
-                                        <apex:selectOption itemValue="US" itemLabel="United States"/>
-                                    </apex:selectList>
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <input id="zip" type="text" name="zip"></input>
+                            	</div>
+                            </div>
+                            <div class="row">                                                                    
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="country" value="Country" />                                    
                                 </div>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="comment" value="Payment Comments:" />
-                                    <apex:input value="{!comment}" id="comment" styleClass="col-xs-4 col-sm-3 col-md-4"/>
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <select id="country" name="country">
+                                        <option value="CAN">Canada</option>
+                                        <option value="US">United States</option>
+                                    </select>
                                 </div>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="hostedPCICurrency" value="Currency:" />                                    
-                                    <apex:selectList size="1" value="{!hostedPCICurrency}" id="hostedPCICurrency" styleClass="col-xs-4 col-sm-3 col-md-4">
-                                        <apex:selectOption itemValue="USD" itemLabel="US Dollar"/>
-                                        <apex:selectOption itemValue="CAD" itemLabel="Canadian Dollar"/>
-                                    </apex:selectList>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="comment" value="Payment Comments" />
                                 </div>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="amount" value="Payment Amount:" />
-                                    <apex:input value="{!amount}" id="amount" styleClass="col-xs-4 col-sm-3 col-md-4"/>
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <input id="comment" type="text" name="comment"></input>
+                            	</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="currency" value="Currency" />                                    
                                 </div>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="paymentProfile" value="Payment Profile:" />
-                                    <apex:selectList size="1" value="{!paymentProfile}" id="paymentProfile" styleClass="col-xs-4 col-sm-3 col-md-4">
-                                        <apex:selectOption itemValue="DEF" itemLabel="DEF - Currency: USD"/>
-                                        <apex:selectOption itemValue="DEF_MONERIS" itemLabel="DEF_MONERIS - Currency: CAD"/>
-                                        <apex:selectOption itemValue="DEF_MONERIS" itemLabel="DEF_MONERIS - Currency: USD"/>
-                                        <apex:selectOption itemValue="DEF_3DSEC" itemLabel="DEF_3DSEC - Currency: any"/>
-                                    </apex:selectList>
-                                </div>                                                                 
-                            </fieldset>
-                            <fieldset id = "ccInfo" class = "ccInfo">
-                                <legend>Credit Card Information</legend>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4" for="cardType" value="Card Type" />                                    
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <select id="currency" name="currency">
+                                        <option value="CAD">Canadian Dollar</option>
+                                        <option value="USD">US Dollar</option>
+                                    </select>
                                 </div>
-                                <div class="control-group">    
-                                    <apex:selectList id="cardType" value="{!cardType}" size="1" styleClass="col-xs-4 col-sm-3 col-md-3">
-                                        <apex:selectOption itemValue="visa" itemLabel="Visa"/>
-                                        <apex:selectOption itemValue="mastercard" itemLabel="Mastercard"/>
-                                        <apex:selectOption itemValue="amex" itemLabel="American Express"/>
-                                    </apex:selectList>                                                                                                      
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="amount" value="Payment Amount" />
                                 </div>
-                                <br/>
-                                <br/>                                
-                                <div class="row">
-                                    <iframe id="ccframe" name="ccframe" onload="receiveHPCIMsg()" src="" style="border:none" height="61">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <input id="amount" type="text" name="amount"></input>
+                            	</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="paymentProfile" value="Payment Profile" />
+                                </div>
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <select id="paymentProfile" name="paymentProfile">
+                                        <option value="DEF">DEF - Currency: USD</option>
+                                        <option value="DEF_MONERIS">DEF_MONERIS - Currency: CAD</option>
+                                        <option value="DEF_MONERIS">DEF_MONERIS - Currency: USD</option>
+                                        <option value="DEF_3DSEC">DEF_3DSEC - Currency: any</option>
+                                    </select>
+                                </div>
+                            </div>                                                                 
+            			</fieldset>
+                        <fieldset id = "ccInfo" class = "ccInfo">
+                            <legend>Credit Card Information</legend>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel for="cardType" value="Card Type" />                                    
+                                </div>
+                                <div class="col-xs-4 col-sm-3 col-md-4">   
+                                    <select id="cardType" name="cardType" class="selectpicker">
+                                        <option value="visa">Visa</option>
+                                        <option value="mastercard">MasterCard</option>
+                                        <option value="amex">American Express</option>
+                                    </select> 
+                                </div>
+                            </div>                               
+                            <div class="row embed-responsive embed-responsive-8by1">
+                                <iframe id="ccframe" name="ccframe" onload="receiveHPCIMsg()" src="">
                                     If you can see this, your browser doesn't understand IFRAME.
-                                    </iframe>
+                                </iframe>
+                            </div>
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <apex:outputLabel >Expiry MM/YY</apex:outputLabel>
                                 </div>
-                                <br/>
-                                <div class="control-group row">
-                                    <apex:outputLabel styleClass="control-label col-xs-4 col-sm-3 col-md-4">Expiry MM/YY</apex:outputLabel>
-                                </div>                                
-                                <div class="control-group">                                    
-                                    <apex:selectList id="expiryMonth" value="{!expiryMonth}" size="1" styleClass="col-xs-3 col-sm-3 col-md-3">
-                                        <apex:selectOption itemValue="01" itemLabel="01 - January"/>
-                                        <apex:selectOption itemValue="02" itemLabel="02 - February"/>
-                                        <apex:selectOption itemValue="03" itemLabel="03 - March"/>
-                                        <apex:selectOption itemValue="04" itemLabel="04 - April"/>
-                                        <apex:selectOption itemValue="05" itemLabel="05 - May"/>
-                                        <apex:selectOption itemValue="06" itemLabel="06 - June"/>
-                                        <apex:selectOption itemValue="07" itemLabel="07 - July"/>
-                                        <apex:selectOption itemValue="08" itemLabel="08 - August"/>
-                                        <apex:selectOption itemValue="09" itemLabel="09 - September"/>
-                                        <apex:selectOption itemValue="10" itemLabel="10 - October"/>
-                                        <apex:selectOption itemValue="11" itemLabel="11 - November"/>
-                                        <apex:selectOption itemValue="12" itemLabel="12 - December"/>
-                                    </apex:selectList>
-                                    <apex:selectList id="expiryYear" value="{!expiryYear}" size="1" styleClass="col-xs-2 col-sm-2 col-md-2 col-md-offset-1 col-sm-offset-1">
-                                        <apex:selectOption itemValue="16" itemLabel="2016"/>
-                                        <apex:selectOption itemValue="17" itemLabel="2017"/>
-                                        <apex:selectOption itemValue="18" itemLabel="2018"/>
-                                        <apex:selectOption itemValue="19" itemLabel="2019"/>
-                                        <apex:selectOption itemValue="20" itemLabel="2020"/>
-                                        <apex:selectOption itemValue="21" itemLabel="2021"/>
-                                        <apex:selectOption itemValue="22" itemLabel="2022"/>
-                                        <apex:selectOption itemValue="23" itemLabel="2023"/>
-                                        <apex:selectOption itemValue="24" itemLabel="2024"/>
-                                        <apex:selectOption itemValue="25" itemLabel="2025"/>
-                                        <apex:selectOption itemValue="26" itemLabel="2026"/>
-                                    </apex:selectList>
+                            </div>                                
+                            <div class="row">
+                                <div class="col-xs-4 col-sm-3 col-md-4">                                    
+                                    <select id="expiryMonth" name="expiryMonth" class="selectpicker">
+                                        <option value="01">01 - January</option>
+                                        <option value="02">02 - February</option>
+                                        <option value="03">03 - March</option>
+                                        <option value="04">04 - April</option>
+                                        <option value="05">05 - May</option>
+                                        <option value="06">06 - June</option>
+                                        <option value="07">07 - July</option>
+                                        <option value="08">08 - August</option>
+                                        <option value="09">09 - September</option>
+                                        <option value="10">10 - October</option>
+                                        <option value="11">11 - November</option>
+                                        <option value="12">12 - December</option>
+                                    </select>
                                 </div>
-                                <br/>
-                                <br/>
-                                <div class = "row">
-                                    <div class = "col-xs-6 col-sm-6 col-md-6">
-                                        
-                                        <button type="button" value="Submit"  class="btn"                                      
+                                <div class="col-xs-4 col-sm-3 col-md-4">
+                                    <select id="expiryYear" name="expiryYear" class="selectpicker">                              
+                                    </select>
+                                </div>
+                            </div>
+                			<br/>
+                			<br/>
+                            <div class = "row">
+                                <div class = "col-xs-6 col-sm-6 col-md-4">
+                                    <button type="button" value="Submit"  class="btn"                                      
                                             id="processPaymentButton" onClick='sendHPCIMsg()'>
-                                            Process Payment
-                                        </button>
-                                        <apex:actionFunction action="{!processPayment}" name="processPayment" />
-                                    </div>                                  
-                                    <div class="col-xs-6 col-sm-6 col-md-6">
-                                        <div style="float:right">
-                                            <!-- Reset button -->
-                                            <button id="paymentResetButton" type="button" value="Reset Payment" class="btn">Reset Payment</button>
-                                        </div>                                                                                                                        
-                                    </div>
-                                </div>                                                            
-                                <apex:actionFunction action="{!populateData}" name="populateData" rerender="config"/>                                
-                                <!-- HostedPCI iframe "src" attribute(populated by a controller) -->
-                                <apex:outputPanel id="config" >
-                                    <apex:inputHidden id="iFrameSrc" value="{!iFrameSrc}"/>    
-                                </apex:outputPanel>
-                                <div class="row">
-                                    <!-- Hidden rows that are required by the  hpciSiteSuccessHandlervV2 function-->
-                                    <div >
-                                        <apex:inputHidden id="ccNum" value="{!ccNum}"/>
-                                        <apex:inputHidden id="ccCVV" value="{!ccCVV}"/>
-                                        <apex:inputHidden id="ccBIN" value="{!ccBIN}"/>                                        
-                                        <apex:inputHidden id="action3DSec" value="{!action3DSec}"/>
-                                    </div>
+                                        Process Payment
+                                    </button>
+                                    <apex:actionFunction action="{!processPayment}" name="processPayment" />
+                                </div>                                  
+                                <div class="col-xs-6 col-sm-6 col-md-4">
+                                    <div class="pull-right">
+                                        <!-- Reset button -->
+                                        <button id="paymentResetButton" type="button" value="Reset Payment" class="btn">Reset Payment</button>
+                                    </div>                                                                                                                        
                                 </div>
-                            </fieldset>
-                        </fieldset>
-                    </apex:form>
-               </div>
-           </div>
-        </body>        
-    </html>
+                            </div>                                                            
+                            <apex:actionFunction action="{!populateData}" name="populateData" rerender="config"/>                                
+                            <!-- HostedPCI iframe "src" attribute(populated by a controller) -->
+                            <apex:outputPanel id="config" >
+                                <apex:inputHidden id="iFrameSrc" value="{!iFrameSrc}"/>    
+                            </apex:outputPanel>
+                            <div class="row">
+                                <!-- Hidden rows that are required by the  hpciSiteSuccessHandlervV2 function-->
+                                <div>
+                                    <input type="hidden" id="ccNum" name="ccNum"/>
+                                    <input type="hidden" id="ccCVV" name="ccCVV"/>
+                                    <input type="hidden" id="ccBIN" name="ccBIN"/>
+                                    <input type="hidden" id="action3DSec" name="action3DSec" value="verifyenroll"/>
+                                </div>
+                            </div>
+            			</fieldset>
+            		</fieldset>
+            </apex:form>
+        </div>
+    </div>
 </apex:page>

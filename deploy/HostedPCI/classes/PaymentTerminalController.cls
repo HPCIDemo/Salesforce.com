@@ -23,9 +23,10 @@ public with sharing class PaymentTerminalController {
         hpciRequestParamMap.put('pxyCreditCard.cardCodeVerification', cvvToken);
         hpciRequestParamMap.put('pxyTransaction.txnAmount', paymentAmount);
         hpciRequestParamMap.put('pxyTransaction.txnCurISO', hpciCurrency);
-        DateTime timeStamp = DateTime.now();
-        String merchantRefId = String.valueOf(timeStamp.millisecond()+ 1000000);
+ 
+        String merchantRefId = String.valueOf(System.currentTimeMillis());
         hpciRequestParamMap.put('pxyTransaction.merchantRefId',merchantRefId);
+ 
         hpciRequestParamMap.put('pxyTransaction.txnPayName', paymentProfile);
         hpciRequestParamMap.put('pxyTransaction.txnComment', paymentComments);
         hpciRequestParamMap.put('pxyCustomerInfo.billingLocation.firstName', firstName);
@@ -38,20 +39,19 @@ public with sharing class PaymentTerminalController {
         hpciRequestParamMap.put('pxyCustomerInfo.billingLocation.country', country);
 
         if(action3DSec =='verifyenroll'){
-                   hpciRequestParamMap.put('pxyThreeDSecAuth.actionName', action3DSec);
+            hpciRequestParamMap.put('pxyThreeDSecAuth.actionName', action3DSec);
         }
 
         String hostedPciMsg = HostedPciServiceUtil.httpCalloutHostedPciAuthOnly(hpciRequestParamMap);
         Map<String,String> hostedPciMsgMap = HostedPciServiceUtil.parseQueryString(hostedPciMsg);
 
-        if(hostedPciMsgMap.get('pxyResponse.threeDSEnrolled') != 'Y'){
-            SaveTransaction(ccToken, cardType, firstName, lastName, expiryMonth, expiryYear,
+        SaveTransaction(ccToken, cardType, firstName, lastName, expiryMonth, expiryYear,
                             address1, address2, paymentAmount, city, country, hpciCurrency,
                             hostedPciMsgMap.get('pxyResponse.processorRefId'), merchantRefId, paymentComments, paymentProfile,
-                            state, zip, hostedPciMsg);
-            }
+                            state, zip, hostedPciMsg);        
 
         hostedPciMsgMap.put('fullMsg',hostedPciMsg);
+        
         return hostedPciMsgMap;
     }
 
@@ -84,11 +84,11 @@ public with sharing class PaymentTerminalController {
             // populated with an ID.
             ID newTokenID = newToken.ID;
 
-            DateTime timeStamp = DateTime.now();
-            if(processorRefId == '0'){
-                newPayment.Name = String.valueOf(timeStamp.millisecond());
+            if(processorRefId == '0' || String.isBlank(processorRefId)){
+                processorRefId = '';
+                newPayment.Name = String.valueOf(System.currentTimeMillis());
             }else{
-                newPayment.Name = processorRefId + '-' + String.valueOf(timeStamp.millisecond());
+                newPayment.Name = processorRefId + '-' + String.valueOf(System.currentTimeMillis());
             }
 
             newPayment.address1__c = address1;
@@ -134,16 +134,26 @@ public with sharing class PaymentTerminalController {
                 hostedPciConf.endPointVoid__c = '/iSynSApp/paymentVoid.action';
                 hostedPciConf.endPointCapture__c = '/iSynSApp/paymentCapture.action';
                 hostedPciConf.endPointCredit__c = '/iSynSApp/paymentCredit.action';
-                hostedPciConf.locationName__c = 'javasample1';
+                hostedPciConf.locationName__c = 'salesforce1';
                 hostedPciConf.apiVersion__c = '1.0.1';
                 hostedPciConf.endPointAuth__c = '/iSynSApp/paymentAuth.action';
                 hostedPciConf.endPointBaseUrl__c = 'https://apiservice.hostedpci.com';
                 hostedPciConf.endPointSale__c = '/iSynSApp/paymentSale.action';
                 hostedPciConf.endPoint_manageCCMapPhoneAPI__c = '/iSynSApp/manageCCMapPhoneAPI.action';
                 hostedPciConf.siteId__c = '528160';
-
+				
                 //Check if the user has create access
-                if (!Schema.sObjectType.HostedPCIConfigurations__c.isCreateable()){
+                if (!Schema.sObjectType.HostedPCIConfigurations__c.fields.apiType__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointVoid__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointCapture__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointCredit__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.locationName__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.apiVersion__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointAuth__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointBaseUrl__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointSale__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPoint_manageCCMapPhoneAPI__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.siteId__c.isCreateable()){
                     ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
 	                                                    'Insufficient access'));
 	      			return null;
@@ -152,10 +162,10 @@ public with sharing class PaymentTerminalController {
           
                 SiteId = HostedPCIConfigurations__c.getInstance().siteId__c;
                 LocationName = HostedPCIConfigurations__c.getInstance().locationName__c;
-                iFrameSrc = 'https://ccframe.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&'
+                iFrameSrc = 'https://ccifrm01.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&'
             			+'locationName='+ LocationName
             			+'&sid=' + SiteId
-            			+'&pluginMode=jq2'
+            			+'&pluginMode=jq3'
             			+'&fullParentHost=https://' + fullParentHost
             			+'&fullParentQStr=' + fullParentQStr;
 
@@ -164,10 +174,10 @@ public with sharing class PaymentTerminalController {
                 ApexPages.addMessages(e);
             }
         }else{
-            iFrameSrc = 'https://ccframe.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&'
+            iFrameSrc = 'https://ccifrm01.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&'
             			+'locationName='+ LocationName
             			+'&sid=' + SiteId
-            			+'&pluginMode=jq2'
+            			+'&pluginMode=jq3'
             			+'&fullParentHost=https://' + fullParentHost
             			+'&fullParentQStr=' + fullParentQStr;
         }
@@ -194,8 +204,8 @@ public with sharing class PaymentTerminalController {
         nextPage.getParameters().put('currency', ApexPages.currentPage().getParameters().get('currency'));
         nextPage.getParameters().put('amount', ApexPages.currentPage().getParameters().get('amount'));
         nextPage.getParameters().put('comment', ApexPages.currentPage().getParameters().get('comment'));
-        nextPage.getParameters().put('paymentProfile', ApexPages.currentPage().getParameters().get('paymentProfile'));
-
+        nextPage.getParameters().put('paymentProfile', ApexPages.currentPage().getParameters().get('paymentProfile'));                
+        
         return nextPage;
     }
 

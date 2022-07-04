@@ -1,4 +1,4 @@
-public with sharing class HostedPCICheckoutController {
+public without sharing class HostedPCICheckoutController { //CRUD/FLS False Positive: required for Sites user with Create/Read permissions.
 	public String firstName { get; set; }
     public String lastName { get; set; }
     public String address1 { get; set; }
@@ -34,28 +34,51 @@ public with sharing class HostedPCICheckoutController {
     public string authTxnId{get; set;}
 
     public PageReference processPayment() {
-       	PageReference nextPage;
-
+        PageReference nextPage;        
+        	
         //Call HostedPCI
-        HostedPciCallout();
+        HostedPciCallout();        
 
         // Postprocess request: gather and validate submitted data
-        status = hostedPciMsgMap.get('pxyResponse.responseStatus.name');
-        description = hostedPciMsgMap.get('pxyResponse.responseStatus.description');
-
+        status = hostedPciMsgMap.get('status');
+        description = hostedPciMsgMap.get('pxyResponse.responseStatus.description');		
+        
         payDate = Date.today();
-
-        if(hostedPciMsgMap.get('pxyResponse.threeDSEnrolled') != 'Y'){
-            SaveTransaction();
+		SaveTransaction();
+        
+        if(hostedPciMsgMap.get('pxyResponse.threeDSEnrolled') != 'Y'){            
 			nextPage = Page.HostedPCICheckoutMsg;
         }else if(hostedPciMsgMap.get('pxyResponse.threeDSEnrolled') == 'Y'){
             authTxnId= hostedPciMsgMap.get('pxyResponse.threeDSTransactionId');
             nextPage = Page.ThreeDSecPin;
-        }
-
+            
+            fullParentQStr = ApexPages.currentPage().getUrl();
+        	fullParentHost = ApexPages.currentPage().getHeaders().get('Host');
+        	SiteId = HostedPCIConfigurations__c.getInstance().siteId__c;
+        }        
+        
+        nextPage.getParameters().put('authTxnId', 'authTxnId');
+        nextPage.getParameters().put('ccNum', ccNum);
+        nextPage.getParameters().put('ccCVV', ccCVV);
+        nextPage.getParameters().put('cardType', cardType);
+        nextPage.getParameters().put('expiryMonth', expiryMonth);
+        nextPage.getParameters().put('expiryYear', expiryYear);
+        nextPage.getParameters().put('firstName', firstName);
+        nextPage.getParameters().put('lastName', lastName);
+        nextPage.getParameters().put('address1', address1);
+        nextPage.getParameters().put('address2', address2);
+        nextPage.getParameters().put('city', city);
+        nextPage.getParameters().put('state', state);
+		nextPage.getParameters().put('zip', zip);
+        nextPage.getParameters().put('country', country);
+        nextPage.getParameters().put('currency', hostedPCICurrency);
+        nextPage.getParameters().put('amount', amount);
+        nextPage.getParameters().put('comment', comment);
+        nextPage.getParameters().put('paymentProfile', paymentProfile);
+        
         return nextPage;
     }
-
+       
     public PageReference processThreeDSecPayment() {
        	PageReference nextPage = Page.HostedPCICheckoutMsg;
 
@@ -63,8 +86,14 @@ public with sharing class HostedPCICheckoutController {
         HostedPciCallout();
 
         // Postprocess request: gather and validate submitted data
-        status = hostedPciMsgMap.get('pxyResponse.responseStatus.name');
+        status = hostedPciMsgMap.get('status');
         description = hostedPciMsgMap.get('pxyResponse.responseStatus.description');
+        if( !String.isNotBlank(description) && String.isNotBlank(status) && status.equals('error')) {
+            String errId = hostedPciMsgMap.get('errId');
+            if (String.isNotBlank(errId)) {
+                description = errId;
+            }
+        }
 
         payDate = Date.today();
 
@@ -78,8 +107,8 @@ public with sharing class HostedPCICheckoutController {
         fullParentHost = ApexPages.currentPage().getHeaders().get('Host');
         SiteId = HostedPCIConfigurations__c.getInstance().siteId__c;
         LocationName = HostedPCIConfigurations__c.getInstance().locationName__c;
-
-        if((String.isEmpty(SiteId))&&(String.isEmpty(LocationName))){
+                
+        if ((String.isEmpty(SiteId))&&(String.isEmpty(LocationName))) {
             try{
                 HostedPCIConfigurations__c hostedPciConf = HostedPCIConfigurations__c.getInstance();
                 
@@ -87,7 +116,7 @@ public with sharing class HostedPCICheckoutController {
                 hostedPciConf.endPointVoid__c = '/iSynSApp/paymentVoid.action';
                 hostedPciConf.endPointCapture__c = '/iSynSApp/paymentCapture.action';
                 hostedPciConf.endPointCredit__c = '/iSynSApp/paymentCredit.action';
-                hostedPciConf.locationName__c = 'javasample1';
+                hostedPciConf.locationName__c = 'salesforce1';
                 hostedPciConf.apiVersion__c = '1.0.1';
                 hostedPciConf.endPointAuth__c = '/iSynSApp/paymentAuth.action';
                 hostedPciConf.endPointBaseUrl__c = 'https://apiservice.hostedpci.com';
@@ -95,26 +124,42 @@ public with sharing class HostedPCICheckoutController {
                 hostedPciConf.endPoint_manageCCMapPhoneAPI__c = '/iSynSApp/manageCCMapPhoneAPI.action';
                 hostedPciConf.siteId__c = '528160';
                 
-                insert hostedPciConf;
+                //Check if the user has create access
+                if (!Schema.sObjectType.HostedPCIConfigurations__c.fields.apiType__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointVoid__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointCapture__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointCredit__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.locationName__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.apiVersion__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointAuth__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointBaseUrl__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPointSale__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.endPoint_manageCCMapPhoneAPI__c.isCreateable() ||
+                   		!Schema.sObjectType.HostedPCIConfigurations__c.fields.siteId__c.isCreateable()){
+                    ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
+	                                                    'Insufficient access'));
+	      			return null;
+			    }
+                insert hostedPciConf;               
 
                 SiteId = HostedPCIConfigurations__c.getInstance().siteId__c;
                 LocationName = HostedPCIConfigurations__c.getInstance().locationName__c;
-                iFrameSrc = 'https://ccframe.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&'
+                iFrameSrc = 'https://ccifrm01.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&'
             			+'locationName='+ LocationName
             			+'&sid=' + SiteId
-            			+'&pluginMode=jq2'
+            			+'&pluginMode=jq3'
             			+'&fullParentHost=https://' + fullParentHost
             			+'&fullParentQStr=' + fullParentQStr;
 
-            }catch (DmlException e) {
+            } catch (DmlException e) {
                 System.debug(e.getMessage());
                 ApexPages.addMessages(e);
             }
-        }else{
-            iFrameSrc = 'https://ccframe.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&'
+        } else {
+            iFrameSrc = 'https://ccifrm01.hostedpci.com/iSynSApp/showPxyPage!ccFrame.action?pgmode1=prod&'
             			+'locationName='+ LocationName
             			+'&sid=' + SiteId
-            			+'&pluginMode=jq2'
+            			+'&pluginMode=jq3'
             			+'&fullParentHost=https://' + fullParentHost
             			+'&fullParentQStr=' + fullParentQStr;
         }
@@ -134,16 +179,34 @@ public with sharing class HostedPCICheckoutController {
 
         // Get request parameters from form (all the attributes that the
         // user inputs
+        ccNum = ApexPages.currentPage().getParameters().get('ccNum');
+        ccCVV = ApexPages.currentPage().getParameters().get('ccCVV');
+        cardType  = ApexPages.currentPage().getParameters().get('cardType');
+        expiryMonth = ApexPages.currentPage().getParameters().get('expiryMonth');
+        expiryYear = ApexPages.currentPage().getParameters().get('expiryYear');
+        firstName = ApexPages.currentPage().getParameters().get('firstName');
+        lastName = ApexPages.currentPage().getParameters().get('lastName');
+        address1 = ApexPages.currentPage().getParameters().get('address1');
+        address2 = ApexPages.currentPage().getParameters().get('address2');
+        city = ApexPages.currentPage().getParameters().get('city');
+        state = ApexPages.currentPage().getParameters().get('state');
+		zip = ApexPages.currentPage().getParameters().get('zip');
+        country = ApexPages.currentPage().getParameters().get('country');
+        hostedPCICurrency = ApexPages.currentPage().getParameters().get('currency');
+        amount = ApexPages.currentPage().getParameters().get('amount');
+        comment = ApexPages.currentPage().getParameters().get('comment');
+        paymentProfile = ApexPages.currentPage().getParameters().get('paymentProfile'); 
+        action3DSec = ApexPages.currentPage().getParameters().get('action3DSec'); 
+        merchantRefId = String.valueOf(System.currentTimeMillis()); 
+        
         hpciRequestParamMap.put('pxyCreditCard.cardType', cardType);
         hpciRequestParamMap.put('pxyCreditCard.creditCardNumber', ccNum);
         hpciRequestParamMap.put('pxyCreditCard.expirationMonth', expiryMonth);
         hpciRequestParamMap.put('pxyCreditCard.expirationYear', expiryYear);
         hpciRequestParamMap.put('pxyCreditCard.cardCodeVerification', ccCVV);
         hpciRequestParamMap.put('pxyTransaction.txnAmount', amount);
-        hpciRequestParamMap.put('pxyTransaction.txnCurISO', hostedPCICurrency);
-        DateTime timeStamp = DateTime.now();
-        merchantRefId = String.valueOf(timeStamp.millisecond()+ 1000000);
-        hpciRequestParamMap.put('pxyTransaction.merchantRefId',merchantRefId);
+        hpciRequestParamMap.put('pxyTransaction.txnCurISO', hostedPCICurrency);                       
+        hpciRequestParamMap.put('pxyTransaction.merchantRefId',merchantRefId);        
         hpciRequestParamMap.put('pxyTransaction.txnPayName', paymentProfile);
         hpciRequestParamMap.put('pxyTransaction.txnComment', comment);
         hpciRequestParamMap.put('pxyCustomerInfo.email', Apexpages.currentPage().getParameters().get('email'));
@@ -201,19 +264,23 @@ public with sharing class HostedPCICheckoutController {
 	                                                    'Insufficient access'));
 	     		return;
 			}
-            upsert newToken newToken.ccNum__c;
+            
+            try {
+            	upsert newToken newToken.ccNum__c;
+            } catch (DmlException e) {
+                System.debug(e.getMessage());
+            }
 
             // Once the token is inserted, the sObject will be
             // populated with an ID.
             ID newTokenID = newToken.ID;
 
-            DateTime timeStamp = DateTime.now();
-            if(processorRefId == '0'){
-                newPayment.Name = String.valueOf(timeStamp.millisecond());
+            if(processorRefId == '0' || String.isBlank(processorRefId)){
+                processorRefId = '';
+                newPayment.Name = String.valueOf(System.currentTimeMillis());
             }else{
-                newPayment.Name = processorRefId + '-' + String.valueOf(timeStamp.millisecond());
+                newPayment.Name = processorRefId + '-' + String.valueOf(System.currentTimeMillis());
             }
-
 
             newPayment.address1__c = address1;
             newPayment.address2__c = address2;
@@ -229,14 +296,28 @@ public with sharing class HostedPCICheckoutController {
             newPayment.zip__c =  zip;
             newPayment.HostedPci_Response__c = hostedPciMsg;
             newPayment.Token__c = newTokenID;
-
+                        
             //Check if the user has create access
-            if (!Schema.sObjectType.Payment__c.isCreateable()){
+            if (!Schema.sObjectType.Payment__c.fields.Name.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.address1__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.address2__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.amount__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.city__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.country__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.currency__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.merchantRefId__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.processorRefId__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.comment__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.paymentProfile__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.state__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.zip__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.HostedPci_Response__c.isCreateable() ||
+               		!Schema.sObjectType.Payment__c.fields.Token__c.isCreateable()) {
                   ApexPages.addMessage(new ApexPages.Message(ApexPages.Severity.FATAL,
 	                                                    'Insufficient access'));
 	     		return;
 			}
-            upsert newPayment;
+            insert newPayment;
         } catch (DmlException e) {
             System.debug(e.getMessage());
             ApexPages.addMessages(e);

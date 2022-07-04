@@ -74,6 +74,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>Payment__c.amount__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>Payment__c.comment__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -83,10 +88,11 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>Token__c.cardType__c</field>
-        <readable>false</readable>
+        <editable>true</editable>
+        <field>Payment__c.processorRefId__c</field>
+        <readable>true</readable>
     </fieldPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
     <label>HostedPCI Developer</label>
     <objectPermissions>
         <allowCreate>true</allowCreate>
