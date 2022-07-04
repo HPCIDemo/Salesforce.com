@@ -95,7 +95,8 @@ In order to use public web site ,"Sites" feature have to be enabled in your Sale
 - Go to "Sites". Click on the "Site Label".
 - Click on "Public Access Settings" . Scroll down, under "Enabled Visualforce Page Access" section click on "Edit". Select "ThreeDSecPin","HostedPCICheckoutMsg" from the left list, click "Add" > "Save".
 - Click “Edit” under profile details, scroll down and under “Custom Object
-Permissions”, enable “Read, Create, Delete, Edit” for Payments and Tokens object.
+Permissions”, enable “Read, Create” for Payments and Tokens object. Enable "Read Access" and "Edit Access" for all fields
+under "Field Permissions" section.
 - Click “Save”.
 
 #Contacts
